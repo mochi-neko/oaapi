@@ -16,6 +16,7 @@ use crate::audio::VerboseJsonResponse;
 use crate::audio::VerboseJsonResponseFormatter;
 use crate::audio::VttResponseFormatter;
 use crate::ApiKey;
+use crate::audio::timestamp_granularity::TimestampGranularity;
 use crate::Error;
 use crate::Prompt;
 use crate::Result;
@@ -36,6 +37,8 @@ pub struct TranscriptionsRequestBody {
     // pub response_format: Option<ResponseFormat>,
     /// The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use log probability to automatically increase the temperature until certain thresholds are hit.
     pub temperature: Option<Temperature>,
+    /// The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
+    pub timestamp_granularities: Option<Vec<TimestampGranularity>>,
 }
 
 impl Default for TranscriptionsRequestBody {
@@ -49,6 +52,7 @@ impl Default for TranscriptionsRequestBody {
             language: None,
             prompt: None,
             temperature: None,
+            timestamp_granularities: None,
         }
     }
 }
@@ -61,6 +65,7 @@ impl TranscriptionsRequestBody {
         language: Option<Iso639_1>,
         prompt: Option<Prompt>,
         temperature: Option<Temperature>,
+        timestamp_granularities: Option<Vec<TimestampGranularity>>,
     ) -> Self {
         Self {
             file,
@@ -68,14 +73,15 @@ impl TranscriptionsRequestBody {
             language,
             prompt,
             temperature,
+            timestamp_granularities,
         }
     }
 
     /// Builds a multipart form from the request body.
     async fn build_form<F, T>(self) -> Result<Form>
-    where
-        F: TextResponseFormat,
-        T: TextResponseFormatter<F>,
+        where
+            F: TextResponseFormat,
+            T: TextResponseFormatter<F>,
     {
         let file = self.file.build_part().await?;
 
@@ -94,6 +100,12 @@ impl TranscriptionsRequestBody {
 
         if let Some(temperature) = self.temperature {
             form = form.text("temperature", temperature.format());
+        }
+
+        if let Some(timestamp_granularities) = self.timestamp_granularities {
+            for granularity in timestamp_granularities {
+                form = form.text("timestamp_granularities[]", granularity.format())
+            }
         }
 
         Ok(form)
@@ -116,12 +128,13 @@ impl TranscriptionsRequestBody {
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
-/// use openai::audio::JsonResponse;
-/// use openai::audio::JsonResponseFormatter;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::audio::JsonResponse;
+/// use oaapi::audio::JsonResponseFormatter;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -133,11 +146,12 @@ impl TranscriptionsRequestBody {
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe::<JsonResponse, JsonResponseFormatter>(
+///     let response = oaapi::audio::transcribe::<JsonResponse, JsonResponseFormatter>(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -147,10 +161,15 @@ pub async fn transcribe<F, T>(
     api_key: &ApiKey,
     request_body: TranscriptionsRequestBody,
 ) -> Result<F>
-where
-    F: TextResponseFormat,
-    T: TextResponseFormatter<F>,
+    where
+        F: TextResponseFormat,
+        T: TextResponseFormatter<F>,
 {
+    if request_body.timestamp_granularities.is_some()
+        && F::format() != VerboseJsonResponse::format() {
+        return Err(Error::TimestampOptionMismatch);
+    }
+
     // Build the multipart form.
     let form = request_body
         .build_form::<F, T>()
@@ -210,10 +229,11 @@ where
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -225,11 +245,12 @@ where
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe_into_json(
+///     let response = oaapi::audio::transcribe_into_json(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -244,7 +265,7 @@ pub async fn transcribe_into_json(
         api_key,
         request_body,
     )
-    .await
+        .await
 }
 
 /// Transcribes audio into the input language as plain text.
@@ -256,10 +277,11 @@ pub async fn transcribe_into_json(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -271,11 +293,12 @@ pub async fn transcribe_into_json(
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe_into_plain_text(
+///     let response = oaapi::audio::transcribe_into_plain_text(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -290,7 +313,7 @@ pub async fn transcribe_into_plain_text(
         api_key,
         request_body,
     )
-    .await
+        .await
 }
 
 /// Transcribes audio into the input language as verbose JSON.
@@ -302,10 +325,11 @@ pub async fn transcribe_into_plain_text(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -317,11 +341,12 @@ pub async fn transcribe_into_plain_text(
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe_into_verbose_json(
+///     let response = oaapi::audio::transcribe_into_verbose_json(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -336,7 +361,7 @@ pub async fn transcribe_into_verbose_json(
         api_key,
         request_body,
     )
-    .await
+        .await
 }
 
 /// Transcribes audio into the input language as SubRip Subtitle (.srt).
@@ -348,10 +373,11 @@ pub async fn transcribe_into_verbose_json(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -363,11 +389,12 @@ pub async fn transcribe_into_verbose_json(
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe_into_srt(
+///     let response = oaapi::audio::transcribe_into_srt(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -390,10 +417,11 @@ pub async fn transcribe_into_srt(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranscriptionsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranscriptionsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -405,11 +433,12 @@ pub async fn transcribe_into_srt(
 ///         language: None,
 ///         prompt: None,
 ///         temperature: None,
+///         timestamp_granularities: None,
 ///     };
 ///
-///     let response = openai::audio::transcribe_into_vtt(
+///     let response = oaapi::audio::transcribe_into_vtt(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }

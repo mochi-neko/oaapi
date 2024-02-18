@@ -58,9 +58,10 @@ impl Default for SpeechRequestBody {
 ///
 /// ## Example
 /// ```
-/// use openai::audio::SpeechRequestBody;
-/// use openai::audio::SpeechInput;
-/// use openai::audio::Voice;
+/// use oaapi::audio::SpeechRequestBody;
+/// use oaapi::audio::SpeechInput;
+/// use oaapi::audio::Voice;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -70,9 +71,9 @@ impl Default for SpeechRequestBody {
 ///         ..Default::default()
 ///     };
 ///
-///     let (mut receiver, handle) = openai::audio::speech(
+///     let (mut receiver, handle) = oaapi::audio::speech(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///         None, // Buffer size.
 ///     ).await?;

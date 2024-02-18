@@ -100,12 +100,13 @@ impl TranslationsRequestBody {
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranslationsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranslationsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
-/// use openai::audio::JsonResponse;
-/// use openai::audio::JsonResponseFormatter;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::audio::JsonResponse;
+/// use oaapi::audio::JsonResponseFormatter;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -117,10 +118,10 @@ impl TranslationsRequestBody {
 ///         prompt: None,
 ///         temperature: None,
 ///     };
-///     
-///     let response = openai::audio::translate::<JsonResponse, JsonResponseFormatter>(
+///
+///     let response = oaapi::audio::translate::<JsonResponse, JsonResponseFormatter>(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -192,10 +193,11 @@ where
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranslationsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranslationsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -207,10 +209,10 @@ where
 ///         prompt: None,
 ///         temperature: None,
 ///     };
-///     
-///     let response = openai::audio::translate_into_json(
+///
+///     let response = oaapi::audio::translate_into_json(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -237,10 +239,11 @@ pub async fn translate_into_json(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranslationsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranslationsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -252,10 +255,10 @@ pub async fn translate_into_json(
 ///         prompt: None,
 ///         temperature: None,
 ///     };
-///     
-///     let response = openai::audio::translate_into_plain_text(
+///
+///     let response = oaapi::audio::translate_into_plain_text(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -282,10 +285,11 @@ pub async fn translate_into_plain_text(
 ///
 /// ## Example
 /// ```
-/// use openai::audio::TranslationsRequestBody;
-/// use openai::audio::File;
+/// use oaapi::audio::TranslationsRequestBody;
+/// use oaapi::audio::File;
 /// use std::path::Path;
-/// use openai::audio::AudioModel;
+/// use oaapi::audio::AudioModel;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -297,10 +301,10 @@ pub async fn translate_into_plain_text(
 ///         prompt: None,
 ///         temperature: None,
 ///     };
-///     
-///     let response = openai::audio::translate_into_verbose_json(
+///
+///     let response = oaapi::audio::translate_into_verbose_json(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }

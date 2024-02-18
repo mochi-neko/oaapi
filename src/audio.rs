@@ -43,3 +43,4 @@ mod result;
 mod speech_input;
 mod speed;
 mod voice;
+mod timestamp_granularity;

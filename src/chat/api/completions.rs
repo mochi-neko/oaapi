@@ -168,11 +168,12 @@ impl Default for CompletionsRequestBody {
 ///
 /// ## Examples
 /// ```
-/// use openai::chat::MessageContent;
-/// use openai::chat::SystemMessage;
-/// use openai::chat::UserMessage;
-/// use openai::chat::ChatModel;
-/// use openai::chat::CompletionsRequestBody;
+/// use oaapi::chat::MessageContent;
+/// use oaapi::chat::SystemMessage;
+/// use oaapi::chat::UserMessage;
+/// use oaapi::chat::ChatModel;
+/// use oaapi::chat::CompletionsRequestBody;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -184,10 +185,10 @@ impl Default for CompletionsRequestBody {
 ///         model: ChatModel::Gpt35Turbo,
 ///         ..Default::default()
 ///     };
-///     
-///     let response = openai::chat::complete(
+///
+///     let response = oaapi::chat::complete(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///     ).await?;
 /// }
@@ -270,12 +271,13 @@ pub async fn complete(
 ///
 /// ## Examples
 /// ```
-/// use openai::chat::MessageContent;
-/// use openai::chat::SystemMessage;
-/// use openai::chat::UserMessage;
-/// use openai::chat::ChatModel;
-/// use openai::chat::CompletionsRequestBody;
-/// use openai::chat::StreamOption;
+/// use oaapi::chat::MessageContent;
+/// use oaapi::chat::SystemMessage;
+/// use oaapi::chat::UserMessage;
+/// use oaapi::chat::ChatModel;
+/// use oaapi::chat::CompletionsRequestBody;
+/// use oaapi::chat::StreamOption;
+/// use oaapi::ApiKey;
 ///
 /// #[tokio::main]
 /// async fn main() -> anyhow::Result<()> {
@@ -288,10 +290,10 @@ pub async fn complete(
 ///         stream: Some(StreamOption::ReturnStream), // Enable streaming.
 ///         ..Default::default()
 ///     };
-///     
-///     let (mut receiver, handle) = openai::chat::complete_stream(
+///
+///     let (mut receiver, handle) = oaapi::chat::complete_stream(
 ///         &reqwest::Client::new(),
-///         &openai::ApiKey::new("your-api-key"),
+///         &ApiKey::new("your-api-key"),
 ///         request_body,
 ///         100, // Buffer size.
 ///     ).await?;

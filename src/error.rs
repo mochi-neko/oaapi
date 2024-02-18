@@ -3,7 +3,7 @@ use std::fmt::Display;
 /// The error of an API calling.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    /// IO error of an API calling.
+    /// IO error with an API calling.
     #[error("IO error: {0}")]
     IOError(std::io::Error),
     /// HTTP request error of an API calling.
@@ -36,6 +36,9 @@ pub enum Error {
     /// Stream option mismatch.
     #[error("Stream option mismatch")]
     StreamOptionMismatch,
+    /// Timestamp option mismatch.
+    #[error("Stream option mismatch, this is only available for verbose_json response format.")]
+    TimestampOptionMismatch,
 }
 
 /// The error format of an API error.
