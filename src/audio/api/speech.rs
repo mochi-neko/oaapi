@@ -1,6 +1,7 @@
 use futures_util::StreamExt;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 
@@ -32,12 +33,36 @@ pub struct SpeechRequestBody {
 impl Default for SpeechRequestBody {
     fn default() -> Self {
         Self {
-            model: SpeechModel::Tts1,
-            input: SpeechInput::new("".to_string()).unwrap(),
-            voice: Voice::Alloy,
+            model: SpeechModel::default(),
+            input: SpeechInput::default(),
+            voice: Voice::default(),
             response_format: None,
             speed: None,
         }
+    }
+}
+
+impl Display for SpeechRequestBody {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "model: {}", self.model)?;
+        write!(f, "input: {}", self.input)?;
+        write!(f, "voice: {}", self.voice)?;
+
+        if let Some(response_format) = self.response_format {
+            write!(
+                f,
+                "response_format: {}",
+                response_format
+            )?;
+        }
+        if let Some(speed) = self.speed {
+            write!(f, "speed: {}", speed)?;
+        }
+
+        Ok(())
     }
 }
 

@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
 use subtp::ParseError;
@@ -61,6 +63,15 @@ impl TextResponseFormat for JsonResponse {
     }
 }
 
+impl Display for JsonResponse {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.text)
+    }
+}
+
 /// The JSON response formatter.
 pub struct JsonResponseFormatter {}
 
@@ -91,7 +102,7 @@ impl TextResponseFormatter<String> for PlainTextResponseFormatter {
 }
 
 /// The verbose JSON response.
-#[derive(serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct VerboseJsonResponse {
     pub task: String,
     pub language: String,
@@ -100,8 +111,25 @@ pub struct VerboseJsonResponse {
     pub segments: Vec<VerboseJsonResponseSegment>,
 }
 
+impl Display for VerboseJsonResponse {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "task: {}", self.task)?;
+        write!(f, "language: {}", self.language)?;
+        write!(f, "duration: {}", self.duration)?;
+        write!(f, "text: {}", self.text)?;
+        write!(f, "segments: [",)?;
+        for segment in self.segments.iter() {
+            write!(f, "{}", segment)?;
+        }
+        write!(f, "]")
+    }
+}
+
 /// The segment of a verbose JSON response.
-#[derive(serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct VerboseJsonResponseSegment {
     pub id: u32,
     pub seek: u32,
@@ -113,6 +141,36 @@ pub struct VerboseJsonResponseSegment {
     pub avg_logprob: f32,
     pub compression_ratio: f32,
     pub no_speech_prob: f32,
+}
+
+impl Display for VerboseJsonResponseSegment {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "id: {}", self.id)?;
+        write!(f, "seek: {}", self.seek)?;
+        write!(f, "start: {}", self.start)?;
+        write!(f, "end: {}", self.end)?;
+        write!(f, "text: {}", self.text)?;
+        write!(f, "tokens: [",)?;
+        for token in self.tokens.iter() {
+            write!(f, "{}", token)?;
+        }
+        write!(f, "]")?;
+        write!(f, "temperature: {}", self.temperature)?;
+        write!(f, "avg_logprob: {}", self.avg_logprob)?;
+        write!(
+            f,
+            "compression_ratio: {}",
+            self.compression_ratio
+        )?;
+        write!(
+            f,
+            "no_speech_prob: {}",
+            self.no_speech_prob
+        )
+    }
 }
 
 impl TextResponseFormat for VerboseJsonResponse {
@@ -188,6 +246,38 @@ pub enum SpeechResponseFormat {
     Aac,
     /// flac
     Flac,
+}
+
+impl Default for SpeechResponseFormat {
+    fn default() -> Self {
+        Self::Mp3
+    }
+}
+
+impl Display for SpeechResponseFormat {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.format())
+    }
+}
+
+impl FromStr for SpeechResponseFormat {
+    type Err = crate::ValidationError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            | "mp3" => Ok(Self::Mp3),
+            | "opus" => Ok(Self::Opus),
+            | "aac" => Ok(Self::Aac),
+            | "flac" => Ok(Self::Flac),
+            | _ => Err(crate::ValidationError {
+                type_name: "SpeechResponseFormat".to_string(),
+                reason: format!("Unknown speech response format: {}", s),
+            }),
+        }
+    }
 }
 
 impl_enum_string_serialization!(

@@ -1,10 +1,29 @@
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 
+/// The speed to speech.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Speed {
     pub(crate) value: f32,
+}
+
+impl Default for Speed {
+    fn default() -> Self {
+        Self {
+            value: 1.0,
+        }
+    }
+}
+
+impl Display for Speed {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl Speed {

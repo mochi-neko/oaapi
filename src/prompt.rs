@@ -1,3 +1,5 @@
+use std::fmt::Display;
+use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 
 /// A prompt for generations.
@@ -5,6 +7,32 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct Prompt {
     value: String,
+}
+
+impl Default for Prompt {
+    fn default() -> Self {
+        Self::new(String::new())
+    }
+}
+
+impl Display for Prompt {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl FromStr for Prompt {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::new(s))
+    }
+}
+
+impl From<String> for Prompt {
+    fn from(value: String) -> Self {
+        Self::new(value)
+    }
 }
 
 impl Prompt {

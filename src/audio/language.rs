@@ -1,4 +1,7 @@
+use std::fmt::{Display, Formatter, Pointer};
+
 /// ISO 639-1 Language Codes.
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Iso639_1 {
     // A
     /// Afar
@@ -409,6 +412,21 @@ pub enum Iso639_1 {
     Zh,
     /// Zulu
     Zu,
+}
+
+impl Default for Iso639_1 {
+    fn default() -> Self {
+        Self::En
+    }
+}
+
+impl Display for Iso639_1 {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.format())
+    }
 }
 
 impl Iso639_1 {

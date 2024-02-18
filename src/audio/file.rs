@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::path::PathBuf;
 
 use reqwest::multipart::Part;
@@ -8,6 +9,7 @@ use crate::ValidationError;
 use crate::ValidationResult;
 
 /// The audio file to be used for the request.
+#[derive(Debug, Clone, PartialEq)]
 pub enum File {
     /// The file path of the audio file.
     FilePath {
@@ -16,9 +18,41 @@ pub enum File {
     },
     /// The binary of the audio file.
     Binary {
-        file_name: String,
+        name: String,
         data: Vec<u8>,
     },
+}
+
+impl Default for File {
+    fn default() -> Self {
+        Self::Binary {
+            name: String::new(),
+            data: Vec::new(),
+        }
+    }
+}
+
+impl Display for File {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | File::FilePath {
+                name,
+                path,
+            } => write!(f, "{} ({})", name, path.display()),
+            | File::Binary {
+                name: file_name,
+                data,
+            } => write!(
+                f,
+                "{} ({} bytes)",
+                file_name,
+                data.len()
+            ),
+        }
+    }
 }
 
 /// Supported audio file formats.
@@ -73,7 +107,7 @@ impl File {
         if let Some(extension) = file_name.split('.').last() {
             if SUPPORTED_FILE_FORMATS.contains(&extension) {
                 return Ok(Self::Binary {
-                    file_name,
+                    name: file_name,
                     data,
                 });
             }
@@ -103,7 +137,7 @@ impl File {
                 Ok(Part::bytes(file).file_name(name))
             },
             | File::Binary {
-                file_name,
+                name: file_name,
                 data,
             } => Ok(Part::bytes(data).file_name(file_name)),
         }
