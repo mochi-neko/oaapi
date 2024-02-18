@@ -1,0 +1,54 @@
+use serde::{Deserialize, Serialize};
+
+/// A prompt for generations.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct Prompt {
+    value: String,
+}
+
+impl Prompt {
+    /// Creates a new prompt.
+    pub fn new<S>(value: S) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            value: value.into(),
+        }
+    }
+
+    /// Returns the value of the prompt as a string.
+    pub(crate) fn format(self) -> String {
+        self.value
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        assert_eq!(
+            Prompt::new("Hello, world!").format(),
+            "Hello, world!"
+        );
+    }
+
+    #[test]
+    fn serialize_prompt() {
+        assert_eq!(
+            serde_json::to_string(&Prompt::new("Hello, world!")).unwrap(),
+            r#""Hello, world!""#
+        );
+    }
+
+    #[test]
+    fn deserialize_prompt() {
+        assert_eq!(
+            serde_json::from_str::<Prompt>("\"Hello, world!\"").unwrap(),
+            Prompt::new("Hello, world!")
+        );
+    }
+}
