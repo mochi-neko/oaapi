@@ -16,14 +16,12 @@ impl TopP {
     ///
     /// ## Error
     /// - [`ValidationError`] - If the top_p is not between 0.0 and 1.0.
-    pub fn new(value: f32) -> ValidationResult<Self> {
+    pub fn new(value: f32) -> ValidationResult<Self, f32> {
         if value < 0.0 || value > 1.0 {
             Err(ValidationError {
                 type_name: "TopP".to_string(),
-                reason: format!(
-                    "The top_p must be between 0.0 and 1.0, but got {}.",
-                    value
-                ),
+                reason: "The top_p must be between 0.0 and 1.0".to_string(),
+                value,
             })
         } else {
             Ok(Self {

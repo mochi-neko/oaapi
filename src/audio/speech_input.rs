@@ -28,7 +28,7 @@ impl Display for SpeechInput {
 }
 
 impl SpeechInput {
-    pub fn new<S>(value: S) -> ValidationResult<Self>
+    pub fn new<S>(value: S) -> ValidationResult<Self, usize>
     where
         S: Into<String>,
     {
@@ -38,6 +38,7 @@ impl SpeechInput {
                 type_name: "SpeechInput".to_string(),
                 reason: "Speech input must be at most 4096 characters"
                     .to_string(),
+                value: value.len(),
             });
         }
 

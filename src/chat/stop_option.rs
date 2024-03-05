@@ -51,14 +51,14 @@ impl StopOption {
     /// - [`ValidationError`] - If the number of sequences is greater than 4.
     pub fn new_up_to_4<S: Into<String>>(
         sequences: Vec<S>
-    ) -> ValidationResult<Self> {
+    ) -> ValidationResult<Self, usize> {
         if sequences.len() > 4 {
             Err(crate::ValidationError {
                 type_name: "StopOption".to_string(),
-                reason: format!(
-                    "The number of sequences must be less than or equal to 4, but got {}.",
-                    sequences.len()
-                ),
+                reason:
+                    "The number of sequences must be less than or equal to 4."
+                        .to_string(),
+                value: sequences.len(),
             })
         } else {
             Ok(Self::UpTo4Sequences(

@@ -33,7 +33,7 @@ impl Display for TimestampGranularity {
 }
 
 impl FromStr for TimestampGranularity {
-    type Err = crate::ValidationError;
+    type Err = crate::ValidationError<String>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -41,7 +41,8 @@ impl FromStr for TimestampGranularity {
             | "word" => Ok(TimestampGranularity::Word),
             | _ => Err(crate::ValidationError {
                 type_name: "TimestampGranularity".to_string(),
-                reason: format!("Unknown timestamp granularity: {}", s),
+                reason: "Unknown timestamp granularity".to_string(),
+                value: s.to_string(),
             }),
         }
     }

@@ -27,11 +27,12 @@ impl Display for Speed {
 }
 
 impl Speed {
-    pub fn new(value: f32) -> ValidationResult<Self> {
+    pub fn new(value: f32) -> ValidationResult<Self, f32> {
         if value < 0.25 || value > 4.0 {
             return Err(ValidationError {
                 type_name: "Speed".to_string(),
                 reason: "Speed must be between 0.25 and 4.0".to_string(),
+                value,
             });
         }
 

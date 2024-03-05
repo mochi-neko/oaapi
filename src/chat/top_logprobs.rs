@@ -16,14 +16,12 @@ impl TopLogprobs {
     ///
     /// ## Error
     /// - [`ValidationError`] - If the top logprobs is not between 0 and 5.
-    pub fn new(value: u32) -> ValidationResult<Self> {
+    pub fn new(value: u32) -> ValidationResult<Self, u32> {
         if value > 5 {
             Err(ValidationError {
                 type_name: "TopLogprobs".to_string(),
-                reason: format!(
-                    "The top logprobs must be between 0 and 5, but got {}.",
-                    value
-                ),
+                reason: "The top logprobs must be between 0 and 5.".to_string(),
+                value,
             })
         } else {
             Ok(Self {

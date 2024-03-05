@@ -280,7 +280,7 @@ impl Display for SpeechResponseFormat {
 }
 
 impl FromStr for SpeechResponseFormat {
-    type Err = crate::ValidationError;
+    type Err = crate::ValidationError<String>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -290,7 +290,8 @@ impl FromStr for SpeechResponseFormat {
             | "flac" => Ok(Self::Flac),
             | _ => Err(crate::ValidationError {
                 type_name: "SpeechResponseFormat".to_string(),
-                reason: format!("Unknown speech response format: {}", s),
+                reason: "Unknown speech response format".to_string(),
+                value: s.to_string(),
             }),
         }
     }

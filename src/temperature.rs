@@ -1,27 +1,22 @@
-use std::fmt::Display;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// Temperature for generations.
 ///
 /// ## Range
 /// The temperature must be between 0.0 and 1.0.
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Temperature {
     value: f32,
 }
 
-impl Default for Temperature {
-    fn default() -> Self {
-        Self {
-            value: 0.0,
-        }
-    }
-}
-
 impl Display for Temperature {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "{}", self.value)
     }
 }
@@ -31,14 +26,13 @@ impl Temperature {
     ///
     /// ## Error
     /// - [`ValidationError`] - If the temperature is not between 0.0 and 1.0.
-    pub fn new(value: f32) -> ValidationResult<Self> {
+    pub fn new(value: f32) -> ValidationResult<Self, f32> {
         if value < 0.0 || value > 1.0 {
             Err(ValidationError {
                 type_name: "Temperature".to_string(),
-                reason: format!(
-                    "The temperature must be between 0.0 and 1.0, but got {}.",
-                    value
-                ),
+                reason: "The temperature must be between 0.0 and 1.0."
+                    .to_string(),
+                value,
             })
         } else {
             Ok(Self {

@@ -18,6 +18,7 @@ use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 
 /// The client of the OpenAI API.
+#[derive(Clone)]
 pub struct Client {
     api_key: ApiKey,
     client: reqwest::Client,
@@ -59,7 +60,7 @@ impl Client {
     ///
     /// let client = Client::from_env().unwrap();
     /// ```
-    pub fn from_env() -> std::result::Result<Self, VarError> {
+    pub fn from_env() -> Result<Self, VarError> {
         let api_key = ApiKey::from_env()?;
 
         Ok(Self::new(api_key, None, None))

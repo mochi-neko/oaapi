@@ -1,17 +1,9 @@
 use std::env::VarError;
 
 /// The organization ID of the OpenAI API.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct OrganizationId {
     value: String,
-}
-
-impl Default for OrganizationId {
-    fn default() -> Self {
-        Self {
-            value: String::new(),
-        }
-    }
 }
 
 impl OrganizationId {

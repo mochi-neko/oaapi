@@ -34,14 +34,13 @@ impl Bias {
     ///
     /// ## Error
     /// - [`ValidationError`] - If the value is not between -100.0 and 100.0.
-    pub fn new(value: f32) -> ValidationResult<Self> {
+    pub fn new(value: f32) -> ValidationResult<Self, f32> {
         if value < -100.0 || value > 100.0 {
             Err(ValidationError {
                 type_name: "Bias".to_string(),
-                reason: format!(
-                    "The value must be between -100.0 and 100.0, but got {}.",
-                    value
-                ),
+                reason: "The value must be between -100.0 and 100.0."
+                    .to_string(),
+                value,
             })
         } else {
             Ok(Self {

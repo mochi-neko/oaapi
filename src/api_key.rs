@@ -1,17 +1,9 @@
 use std::env::VarError;
 
 /// The API key of the OpenAI API.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct ApiKey {
     value: String,
-}
-
-impl Default for ApiKey {
-    fn default() -> Self {
-        Self {
-            value: String::new(),
-        }
-    }
 }
 
 impl ApiKey {

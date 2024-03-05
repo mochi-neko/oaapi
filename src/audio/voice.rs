@@ -54,7 +54,7 @@ impl Display for Voice {
 }
 
 impl FromStr for Voice {
-    type Err = crate::ValidationError;
+    type Err = crate::ValidationError<String>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -66,7 +66,8 @@ impl FromStr for Voice {
             | "shimmer" => Ok(Self::Shimmer),
             | _ => Err(crate::ValidationError {
                 type_name: "Voice".to_string(),
-                reason: format!("Unknown voice: {}", s),
+                reason: "Unknown voice".to_string(),
+                value: s.to_string(),
             }),
         }
     }

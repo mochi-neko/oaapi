@@ -52,20 +52,27 @@ pub struct ApiErrorBody {
 
 /// The error of a validation.
 #[derive(Debug, thiserror::Error)]
-pub struct ValidationError {
+pub struct ValidationError<T>
+where
+    T: Display,
+{
     pub type_name: String,
     pub reason: String,
+    pub value: T,
 }
 
-impl Display for ValidationError {
+impl<T> Display for ValidationError<T>
+where
+    T: Display,
+{
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
         write!(
             f,
-            "Validation error, type: {}, reason: {}",
-            self.type_name, self.reason
+            "Validation error, type: {}, reason: {}, value: {}",
+            self.type_name, self.reason, self.value,
         )
     }
 }

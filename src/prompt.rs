@@ -1,22 +1,21 @@
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use std::str::FromStr;
-use serde::{Deserialize, Serialize};
 
 /// A prompt for generations.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize,
+)]
 #[serde(transparent)]
 pub struct Prompt {
     value: String,
 }
 
-impl Default for Prompt {
-    fn default() -> Self {
-        Self::new(String::new())
-    }
-}
-
 impl Display for Prompt {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         write!(f, "{}", self.value)
     }
 }

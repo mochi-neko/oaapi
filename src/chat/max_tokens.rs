@@ -38,16 +38,16 @@ impl MaxTokens {
     pub fn new(
         value: u32,
         model: ChatModel,
-    ) -> ValidationResult<Self> {
+    ) -> ValidationResult<Self, u32> {
         let context_window = model.context_window();
         if value == 0 || value > context_window {
             Err(ValidationError {
                 type_name: "MaxTokens".to_string(),
                 reason: format!(
-                    "The max tokens count must be between 1 and {}, but got {}.",
+                    "The max tokens count must be between 1 and {}",
                     context_window,
-                    value
                 ),
+                value,
             })
         } else {
             Ok(Self {

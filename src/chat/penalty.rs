@@ -1,6 +1,6 @@
-use std::fmt::Display;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// Penalty.
 ///
@@ -34,14 +34,12 @@ impl Penalty {
     ///
     /// ## Error
     /// - [`ValidationError`] - If the penalty is not between -2.0 and 2.0.
-    pub fn new(value: f32) -> ValidationResult<Self> {
+    pub fn new(value: f32) -> ValidationResult<Self, f32> {
         if value < -2.0 || value > 2.0 {
             Err(ValidationError {
                 type_name: "Penalty".to_string(),
-                reason: format!(
-                    "The penalty must be between -2.0 and 2.0, but got {}.",
-                    value
-                ),
+                reason: "The penalty must be between -2.0 and 2.0.".to_string(),
+                value,
             })
         } else {
             Ok(Self {

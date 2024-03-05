@@ -64,17 +64,26 @@ const SUPPORTED_FILE_FORMATS: [&str; 9] = [
     "flac", "mp3", "mp4", "mpeg", "mpga", "m4a", "ogg", "wav", "webm",
 ];
 
+fn supported_file_format_list() -> String {
+    format!(
+        "[{}]",
+        SUPPORTED_FILE_FORMATS.join(", ")
+    )
+}
+
 impl File {
     /// Creates a new [`File`] from the given file path.
-    pub fn from_file_path(file_path: PathBuf) -> ValidationResult<Self> {
+    pub fn from_file_path(
+        file_path: PathBuf
+    ) -> ValidationResult<Self, String> {
         // Check file existence.
         if !file_path.exists() {
             return Err(ValidationError {
                 type_name: "Resource".to_string(),
-                reason: format!(
-                    "The file does not exist: {}",
-                    file_path.display()
-                ),
+                reason: "The file does not exist".to_string(),
+                value: file_path
+                    .display()
+                    .to_string(),
             });
         }
 
@@ -95,10 +104,12 @@ impl File {
         Err(ValidationError {
             type_name: "Resource".to_string(),
             reason: format!(
-                "The file format is not supported: {}.\nSupported file formats: {:?}",
-                file_path.display(),
-                SUPPORTED_FILE_FORMATS
+                "The file format is not found or not supported.\nSupported file formats are {}",
+                supported_file_format_list()
             ),
+            value: file_path
+                .display()
+                .to_string(),
         })
     }
 
@@ -106,7 +117,7 @@ impl File {
     pub fn from_binary(
         file_name: String,
         data: Vec<u8>,
-    ) -> ValidationResult<Self> {
+    ) -> ValidationResult<Self, String> {
         // Check if the file format is supported.
         if let Some(extension) = file_name.split('.').last() {
             if SUPPORTED_FILE_FORMATS.contains(&extension) {
@@ -120,10 +131,10 @@ impl File {
         Err(ValidationError {
             type_name: "Resource".to_string(),
             reason: format!(
-                "The file format is not supported: {}.\nSupported file formats: {:?}",
-                file_name,
-                SUPPORTED_FILE_FORMATS
+                "The file format is not found or not supported.\nSupported file formats are {}",
+                supported_file_format_list()
             ),
+            value: file_name,
         })
     }
 

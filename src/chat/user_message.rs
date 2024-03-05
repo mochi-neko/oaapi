@@ -170,17 +170,25 @@ impl ImageFormat {
         }
     }
 
-    pub fn from_path(path: std::path::PathBuf) -> ValidationResult<Self> {
+    pub fn from_path(
+        path: std::path::PathBuf
+    ) -> ValidationResult<Self, String> {
         let extension = path
             .extension()
             .ok_or_else(|| ValidationError {
                 type_name: "ImageFormat".to_string(),
                 reason: "Extension is not found".to_string(),
+                value: path
+                    .to_string_lossy()
+                    .to_string(),
             })?
             .to_str()
             .ok_or_else(|| ValidationError {
                 type_name: "ImageFormat".to_string(),
                 reason: "Extension is not found".to_string(),
+                value: path
+                    .to_string_lossy()
+                    .to_string(),
             })?;
 
         match extension {
@@ -190,10 +198,8 @@ impl ImageFormat {
             | "gif" => Ok(ImageFormat::Gif),
             | _ => Err(ValidationError {
                 type_name: "ImageFormat".to_string(),
-                reason: format!(
-                    "Extension is not supported: {}",
-                    extension
-                ),
+                reason: "Not supported extension".to_string(),
+                value: extension.to_string(),
             }),
         }
     }
