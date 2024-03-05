@@ -1,5 +1,6 @@
 use crate::macros::impl_enum_with_string_or_array_serialization;
 use crate::ValidationResult;
+use std::fmt::Display;
 
 /// Stop sequence(s) option.
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -8,6 +9,35 @@ pub enum StopOption {
     SingleSequence(String),
     /// Up to 4 sequences.
     UpTo4Sequences(Vec<String>),
+}
+
+impl Default for StopOption {
+    fn default() -> Self {
+        Self::SingleSequence(String::new())
+    }
+}
+
+impl Display for StopOption {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | StopOption::SingleSequence(s) => {
+                write!(f, "{}", s)
+            },
+            | StopOption::UpTo4Sequences(s) => {
+                write!(f, "[")?;
+                for (i, s) in s.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+                    write!(f, "{}", s)?;
+                }
+                write!(f, "]")
+            },
+        }
+    }
 }
 
 impl StopOption {

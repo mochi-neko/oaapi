@@ -8,9 +8,9 @@ use std::path::Path;
 
 use clap::Parser;
 
-use openai::audio::File;
-use openai::audio::TranscriptionsRequestBody;
-use openai::ApiKey;
+use oaapi::audio::File;
+use oaapi::audio::TranscriptionsRequestBody;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -21,8 +21,7 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let request_body = TranscriptionsRequestBody {
         file: File::from_file_path(
@@ -31,12 +30,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = openai::audio::transcribe_into_plain_text(
-        &client,
-        &api_key,
-        request_body,
-    )
-    .await?;
+    let response = client
+        .audio_transcribe_into_plain_text(request_body)
+        .await?;
 
     println!("Result: {}", response);
 

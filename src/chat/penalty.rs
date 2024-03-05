@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 
@@ -9,6 +10,23 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct Penalty {
     value: f32,
+}
+
+impl Default for Penalty {
+    fn default() -> Self {
+        Self {
+            value: 0.0,
+        }
+    }
+}
+
+impl Display for Penalty {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl Penalty {

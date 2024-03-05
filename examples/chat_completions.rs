@@ -6,12 +6,11 @@
 
 use clap::Parser;
 
-use openai::chat::complete;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::SystemMessage;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -24,8 +23,7 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let request_body = CompletionsRequestBody {
         messages: vec![
@@ -36,7 +34,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = complete(&client, &api_key, request_body).await?;
+    let response = client
+        .chat_complete(request_body)
+        .await?;
 
     println!(
         "Result: {:?}",

@@ -1,6 +1,7 @@
 use crate::chat::ChatModel;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// Max tokens count.
 ///
@@ -10,6 +11,23 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct MaxTokens {
     value: u32,
+}
+
+impl Default for MaxTokens {
+    fn default() -> Self {
+        Self {
+            value: 1024,
+        }
+    }
+}
+
+impl Display for MaxTokens {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl MaxTokens {

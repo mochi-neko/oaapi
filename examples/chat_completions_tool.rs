@@ -7,14 +7,13 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 
-use openai::chat::complete;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::Function;
-use openai::chat::SystemMessage;
-use openai::chat::TooChoiceOption;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::Function;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::TooChoiceOption;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -87,8 +86,7 @@ const GET_CURRENT_WEATHER_SCHEMA: &str = r#"
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let prompt = r#"Respond for user message by using some tool."#;
     let function = Function {
@@ -114,7 +112,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = complete(&client, &api_key, request_body).await?;
+    let response = client
+        .chat_complete(request_body)
+        .await?;
 
     let arguments = response
         .choices

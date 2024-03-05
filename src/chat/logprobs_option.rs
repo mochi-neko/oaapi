@@ -1,4 +1,5 @@
 use crate::macros::impl_enum_bool_serialization;
+use std::fmt::Display;
 
 /// Logprobs option.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -7,6 +8,28 @@ pub enum LogprobsOption {
     NotReturnLogprobs,
     /// Return logprobs. "true"
     ReturnLogprobs,
+}
+
+impl Default for LogprobsOption {
+    fn default() -> Self {
+        LogprobsOption::NotReturnLogprobs
+    }
+}
+
+impl Display for LogprobsOption {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | LogprobsOption::NotReturnLogprobs => {
+                write!(f, "false")
+            },
+            | LogprobsOption::ReturnLogprobs => {
+                write!(f, "true")
+            },
+        }
+    }
 }
 
 impl_enum_bool_serialization!(

@@ -1,5 +1,4 @@
 use futures_util::StreamExt;
-use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use tokio::sync::mpsc::Receiver;
@@ -12,8 +11,10 @@ use crate::audio::SpeechStreamError;
 use crate::audio::SpeechStreamResult;
 use crate::audio::Speed;
 use crate::audio::Voice;
-use crate::ApiKey;
+use crate::Client;
 use crate::Error;
+
+const DEFAULT_STREAM_BUFFER_SIZE: usize = 16 * 1024;
 
 /// The request body for the /audio/speech endpoint.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -66,79 +67,19 @@ impl Display for SpeechRequestBody {
     }
 }
 
-/// Speeches the given text by /audio/speech endpoint.
-///
-/// ## NOTE
-/// Please abort `JoinHandle<()>` when you want to stop receiving the stream.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-/// - `buffer_size` - The size of the buffer to receive the stream.
-///
-/// ## Returns
-/// 1. A receiver to receive the stream.
-/// 2. A handle to join the task.
-///
-/// ## Example
-/// ```
-/// use oaapi::audio::SpeechRequestBody;
-/// use oaapi::audio::SpeechInput;
-/// use oaapi::audio::Voice;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = SpeechRequestBody {
-///         input: SpeechInput::new("Hello, world!".to_string())?,
-///         voice: Voice::Alloy,
-///         ..Default::default()
-///     };
-///
-///     let (mut receiver, handle) = oaapi::audio::speech(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///         None, // Buffer size.
-///     ).await?;
-///
-///     // Receive the stream chunks
-///     while let Some(chunk) = receiver.recv().await {
-///         match chunk {
-///             | Ok(chunk) => {
-///                 // Do something with the chunk.
-///             }
-///             | Err(error) => {
-///                 // Do something with the error.
-///             }
-///         }
-///     };
-///
-///     // Abort the stream.
-///     handle.abort();
-///
-///     Ok(())
-/// }
-/// ```
-pub async fn speech(
+pub(crate) async fn speech(
     client: &Client,
-    api_key: &ApiKey,
     request_body: SpeechRequestBody,
     buffer_size: Option<usize>,
 ) -> crate::Result<(
     Receiver<SpeechStreamResult>,
     JoinHandle<()>,
 )> {
-    let buffer_size = buffer_size.unwrap_or(16 * 1024);
+    let buffer_size = buffer_size.unwrap_or(DEFAULT_STREAM_BUFFER_SIZE);
 
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/audio/speech")
-        .header(
-            "Authorization",
-            api_key.authorization_header(),
-        )
         .json(&request_body)
         .send()
         .await

@@ -1,12 +1,12 @@
 use std::env::VarError;
 
-/// The API key of the OpenAI API.
+/// The organization ID of the OpenAI API.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ApiKey {
+pub struct OrganizationId {
     value: String,
 }
 
-impl Default for ApiKey {
+impl Default for OrganizationId {
     fn default() -> Self {
         Self {
             value: String::new(),
@@ -14,8 +14,8 @@ impl Default for ApiKey {
     }
 }
 
-impl ApiKey {
-    /// Creates a new API key.
+impl OrganizationId {
+    /// Creates a new organization ID.
     pub fn new<S>(value: S) -> Self
     where
         S: Into<String>,
@@ -25,17 +25,17 @@ impl ApiKey {
         }
     }
 
-    /// Loads the API key from the environment variable: `OPENAI_API_KEY`.
+    /// Loads the organization ID from the environment variable: `OPENAI_ORG_ID`.
     pub fn from_env() -> Result<Self, VarError> {
-        let key = std::env::var("OPENAI_API_KEY")?;
+        let key = std::env::var("OPENAI_ORG_ID")?;
 
         Ok(Self {
             value: key,
         })
     }
 
-    /// Returns the HTTP authorization header value.
-    pub(crate) fn authorization_header(&self) -> String {
-        format!("Bearer {}", self.value)
+    /// Returns the HTTP header value.
+    pub(crate) fn organization_header(&self) -> String {
+        self.value.clone()
     }
 }

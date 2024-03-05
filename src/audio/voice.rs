@@ -1,6 +1,6 @@
+use crate::macros::impl_enum_string_serialization;
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
-use crate::macros::impl_enum_string_serialization;
 
 /// The voice of a text-to-speech.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -30,7 +30,26 @@ impl Display for Voice {
         &self,
         f: &mut Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "{}", self.format())
+        match self {
+            | Voice::Alloy => {
+                write!(f, "alloy")
+            },
+            | Voice::Echo => {
+                write!(f, "echo")
+            },
+            | Voice::Fable => {
+                write!(f, "fable")
+            },
+            | Voice::Onyx => {
+                write!(f, "onyx")
+            },
+            | Voice::Nova => {
+                write!(f, "nova")
+            },
+            | Voice::Shimmer => {
+                write!(f, "shimmer")
+            },
+        }
     }
 }
 
@@ -53,19 +72,6 @@ impl FromStr for Voice {
     }
 }
 
-impl Voice {
-    pub(crate) fn format(self) -> &'static str {
-        match self {
-            | Voice::Alloy => "alloy",
-            | Voice::Echo => "echo",
-            | Voice::Fable => "fable",
-            | Voice::Onyx => "onyx",
-            | Voice::Nova => "nova",
-            | Voice::Shimmer => "shimmer",
-        }
-    }
-}
-
 impl_enum_string_serialization!(
     Voice,
     Alloy => "alloy",
@@ -75,4 +81,3 @@ impl_enum_string_serialization!(
     Nova => "nova",
     Shimmer => "shimmer"
 );
-

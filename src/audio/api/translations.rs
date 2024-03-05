@@ -1,15 +1,20 @@
 use reqwest::multipart::Form;
-use reqwest::Client;
 use std::fmt::Display;
+use subtp::srt::SubRip;
+use subtp::vtt::WebVtt;
 
-use crate::audio::response_format::{
-    VerboseJsonResponse, VerboseJsonResponseFormatter,
-};
+use crate::audio::AudioModel;
 use crate::audio::File;
+use crate::audio::JsonResponse;
+use crate::audio::JsonResponseFormatter;
+use crate::audio::PlainTextResponseFormatter;
+use crate::audio::SrtResponseFormatter;
 use crate::audio::TextResponseFormat;
 use crate::audio::TextResponseFormatter;
-use crate::audio::{AudioModel, JsonResponse, JsonResponseFormatter};
-use crate::ApiKey;
+use crate::audio::VerboseJsonResponse;
+use crate::audio::VerboseJsonResponseFormatter;
+use crate::audio::VttResponseFormatter;
+use crate::Client;
 use crate::Error;
 use crate::Prompt;
 use crate::Result;
@@ -87,7 +92,7 @@ impl TranslationsRequestBody {
 
         let mut form = Form::new()
             .part("file", file)
-            .text("model", self.model.format())
+            .text("model", self.model.to_string())
             .text("response_format", F::format());
 
         if let Some(prompt) = self.prompt {
@@ -102,51 +107,8 @@ impl TranslationsRequestBody {
     }
 }
 
-/// Translates audio into English.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-///
-/// ## Type Parameters
-/// - `F` - The response format type.
-/// - `T` - The response formatter type.
-///
-/// ## Returns
-/// Formatted response specified by the type parameters.
-///
-/// ## Example
-/// ```
-/// use oaapi::audio::TranslationsRequestBody;
-/// use oaapi::audio::File;
-/// use std::path::Path;
-/// use oaapi::audio::AudioModel;
-/// use oaapi::audio::JsonResponse;
-/// use oaapi::audio::JsonResponseFormatter;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = TranslationsRequestBody {
-///         file: File::from_file_path(
-///             Path::new("path/to/audio/file").to_path_buf(),
-///          )?,
-///         model: AudioModel::Whisper1,
-///         prompt: None,
-///         temperature: None,
-///     };
-///
-///     let response = oaapi::audio::translate::<JsonResponse, JsonResponseFormatter>(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///     ).await?;
-/// }
-/// ```
-pub async fn translate<F, T>(
+async fn translate<F, T>(
     client: &Client,
-    api_key: &ApiKey,
     request_body: TranslationsRequestBody,
 ) -> Result<F>
 where
@@ -161,10 +123,6 @@ where
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/audio/translations")
-        .header(
-            "Authorization",
-            api_key.authorization_header(),
-        )
         .multipart(form)
         .send()
         .await
@@ -202,140 +160,41 @@ where
     }
 }
 
-/// Translates audio into English as JSON.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-///
-/// ## Example
-/// ```
-/// use oaapi::audio::TranslationsRequestBody;
-/// use oaapi::audio::File;
-/// use std::path::Path;
-/// use oaapi::audio::AudioModel;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = TranslationsRequestBody {
-///         file: File::from_file_path(
-///             Path::new("path/to/audio/file").to_path_buf(),
-///          )?,
-///         model: AudioModel::Whisper1,
-///         prompt: None,
-///         temperature: None,
-///     };
-///
-///     let response = oaapi::audio::translate_into_json(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///     ).await?;
-/// }
-/// ```
-pub async fn translate_into_json(
+pub(crate) async fn translate_into_json(
     client: &Client,
-    api_key: &ApiKey,
     request_body: TranslationsRequestBody,
 ) -> Result<JsonResponse> {
-    translate::<JsonResponse, JsonResponseFormatter>(
-        client,
-        api_key,
-        request_body,
-    )
-    .await
+    translate::<JsonResponse, JsonResponseFormatter>(client, request_body).await
 }
 
-/// Translates audio into English as plain text.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-///
-/// ## Example
-/// ```
-/// use oaapi::audio::TranslationsRequestBody;
-/// use oaapi::audio::File;
-/// use std::path::Path;
-/// use oaapi::audio::AudioModel;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = TranslationsRequestBody {
-///         file: File::from_file_path(
-///             Path::new("path/to/audio/file").to_path_buf(),
-///          )?,
-///         model: AudioModel::Whisper1,
-///         prompt: None,
-///         temperature: None,
-///     };
-///
-///     let response = oaapi::audio::translate_into_plain_text(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///     ).await?;
-/// }
-/// ```
-pub async fn translate_into_plain_text(
+pub(crate) async fn translate_into_plain_text(
     client: &Client,
-    api_key: &ApiKey,
     request_body: TranslationsRequestBody,
-) -> Result<JsonResponse> {
-    translate::<JsonResponse, JsonResponseFormatter>(
-        client,
-        api_key,
-        request_body,
-    )
-    .await
+) -> Result<String> {
+    translate::<String, PlainTextResponseFormatter>(client, request_body).await
 }
 
-/// Translates audio into English as verbose JSON.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-///
-/// ## Example
-/// ```
-/// use oaapi::audio::TranslationsRequestBody;
-/// use oaapi::audio::File;
-/// use std::path::Path;
-/// use oaapi::audio::AudioModel;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = TranslationsRequestBody {
-///         file: File::from_file_path(
-///             Path::new("path/to/audio/file").to_path_buf(),
-///          )?,
-///         model: AudioModel::Whisper1,
-///         prompt: None,
-///         temperature: None,
-///     };
-///
-///     let response = oaapi::audio::translate_into_verbose_json(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///     ).await?;
-/// }
-/// ```
-pub async fn translate_into_verbose_json(
+pub(crate) async fn translate_into_verbose_json(
     client: &Client,
-    api_key: &ApiKey,
     request_body: TranslationsRequestBody,
 ) -> Result<VerboseJsonResponse> {
     translate::<VerboseJsonResponse, VerboseJsonResponseFormatter>(
         client,
-        api_key,
         request_body,
     )
     .await
+}
+
+pub(crate) async fn translate_into_srt(
+    client: &Client,
+    request_body: TranslationsRequestBody,
+) -> Result<SubRip> {
+    translate::<SubRip, SrtResponseFormatter>(client, request_body).await
+}
+
+pub(crate) async fn translate_into_vtt(
+    client: &Client,
+    request_body: TranslationsRequestBody,
+) -> Result<WebVtt> {
+    translate::<WebVtt, VttResponseFormatter>(client, request_body).await
 }

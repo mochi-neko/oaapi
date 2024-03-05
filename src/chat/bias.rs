@@ -1,5 +1,6 @@
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// Bias.
 ///
@@ -9,6 +10,23 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct Bias {
     value: f32,
+}
+
+impl Default for Bias {
+    fn default() -> Self {
+        Self {
+            value: 0.0,
+        }
+    }
+}
+
+impl Display for Bias {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl Bias {

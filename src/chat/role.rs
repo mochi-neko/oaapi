@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::macros::impl_enum_string_serialization;
 
 /// The role of the messages author.
@@ -11,6 +12,34 @@ pub enum Role {
     Assistant,
     /// tool
     Tool,
+}
+
+impl Default for Role {
+    fn default() -> Self {
+        Role::User
+    }
+}
+
+impl Display for Role {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | Role::System => {
+                write!(f, "system")
+            },
+            | Role::User => {
+                write!(f, "user")
+            },
+            | Role::Assistant => {
+                write!(f, "assistant")
+            },
+            | Role::Tool => {
+                write!(f, "tool")
+            },
+        }
+    }
 }
 
 impl_enum_string_serialization!(

@@ -17,8 +17,18 @@ impl Default for TimestampGranularity {
 }
 
 impl Display for TimestampGranularity {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.format())
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | TimestampGranularity::Segment => {
+                write!(f, "segment")
+            },
+            | TimestampGranularity::Word => {
+                write!(f, "word")
+            },
+        }
     }
 }
 
@@ -27,21 +37,12 @@ impl FromStr for TimestampGranularity {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "segment" => Ok(TimestampGranularity::Segment),
-            "word" => Ok(TimestampGranularity::Word),
-            _ => Err(crate::ValidationError {
+            | "segment" => Ok(TimestampGranularity::Segment),
+            | "word" => Ok(TimestampGranularity::Word),
+            | _ => Err(crate::ValidationError {
                 type_name: "TimestampGranularity".to_string(),
                 reason: format!("Unknown timestamp granularity: {}", s),
             }),
-        }
-    }
-}
-
-impl TimestampGranularity {
-    pub(crate) fn format(self) -> &'static str {
-        match self {
-            TimestampGranularity::Segment => "segment",
-            TimestampGranularity::Word => "word",
         }
     }
 }

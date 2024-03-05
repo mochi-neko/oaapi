@@ -10,11 +10,10 @@ use std::sync::Arc;
 use clap::Parser;
 use tokio::io::AsyncWriteExt;
 
-use openai::audio::speech;
-use openai::audio::SpeechInput;
-use openai::audio::SpeechRequestBody;
-use openai::audio::SpeechResponseFormat;
-use openai::ApiKey;
+use oaapi::audio::SpeechInput;
+use oaapi::audio::SpeechRequestBody;
+use oaapi::audio::SpeechResponseFormat;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -29,8 +28,7 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let request_body = SpeechRequestBody {
         input: SpeechInput::new(arguments.text)?,
@@ -39,8 +37,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let (mut receiver, handle) =
-        speech(&client, &api_key, request_body, None).await?;
+    let (mut receiver, handle) = client
+        .audio_speech(request_body, None)
+        .await?;
 
     let mut file = tokio::fs::File::create(arguments.output.clone()).await?;
 

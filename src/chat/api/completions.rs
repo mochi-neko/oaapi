@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use futures_util::StreamExt;
-use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
@@ -24,9 +23,11 @@ use crate::chat::ToolChoice;
 use crate::chat::TopLogprobs;
 use crate::chat::TopP;
 use crate::stream_line_reader::StreamLineReader;
-use crate::ApiKey;
+use crate::Client;
 use crate::Error;
 use crate::Temperature;
+
+const DEFAULT_STREAM_BUFFER_SIZE: usize = 100;
 
 /// The request body for the `/chat/completions` endpoint.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -159,43 +160,8 @@ impl Default for CompletionsRequestBody {
     }
 }
 
-/// Completes chat by `/chat/completions` endpoint.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-///
-/// ## Examples
-/// ```
-/// use oaapi::chat::MessageContent;
-/// use oaapi::chat::SystemMessage;
-/// use oaapi::chat::UserMessage;
-/// use oaapi::chat::ChatModel;
-/// use oaapi::chat::CompletionsRequestBody;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = CompletionsRequestBody {
-///         messages: vec![
-///             SystemMessage::new("Prompt".to_string(), None).into(),
-///             UserMessage::new(MessageContent::Text("Hello, world!".to_string()), None).into(),
-///         ],
-///         model: ChatModel::Gpt35Turbo,
-///         ..Default::default()
-///     };
-///
-///     let response = oaapi::chat::complete(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///     ).await?;
-/// }
-/// ```
-pub async fn complete(
+pub(crate) async fn complete(
     client: &Client,
-    api_key: &ApiKey,
     request_body: CompletionsRequestBody,
 ) -> crate::Result<ChatCompletionObject> {
     // Check stream option.
@@ -208,10 +174,6 @@ pub async fn complete(
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
-        .header(
-            "Authorization",
-            api_key.authorization_header(),
-        )
         .json(&request_body)
         .send()
         .await
@@ -254,73 +216,10 @@ pub async fn complete(
     }
 }
 
-/// Completes chat by `/chat/completions` endpoint with streaming.
-///
-/// ## NOTE
-/// Please abort `JoinHandle<()>` when you want to stop receiving the stream.
-///
-/// ## Arguments
-/// - `client` - The HTTP client.
-/// - `api_key` - Your API key of the OpenAI API.
-/// - `request_body` - The request body.
-/// - `buffer_size` - The size of the buffer to receive the stream.
-///
-/// ## Returns
-/// 1. A channel receiver of the result of the stream chunk.
-/// 2. A join handle of the task that reads the stream.
-///
-/// ## Examples
-/// ```
-/// use oaapi::chat::MessageContent;
-/// use oaapi::chat::SystemMessage;
-/// use oaapi::chat::UserMessage;
-/// use oaapi::chat::ChatModel;
-/// use oaapi::chat::CompletionsRequestBody;
-/// use oaapi::chat::StreamOption;
-/// use oaapi::ApiKey;
-///
-/// #[tokio::main]
-/// async fn main() -> anyhow::Result<()> {
-///     let request_body = CompletionsRequestBody {
-///         messages: vec![
-///             SystemMessage::new("Prompt".to_string(), None).into(),
-///             UserMessage::new(MessageContent::Text("Hello, world!".to_string()), None).into(),
-///         ],
-///         model: ChatModel::Gpt35Turbo,
-///         stream: Some(StreamOption::ReturnStream), // Enable streaming.
-///         ..Default::default()
-///     };
-///
-///     let (mut receiver, handle) = oaapi::chat::complete_stream(
-///         &reqwest::Client::new(),
-///         &ApiKey::new("your-api-key"),
-///         request_body,
-///         100, // Buffer size.
-///     ).await?;
-///
-///     // Receive the stream chunks
-///     while let Some(chunk) = receiver.recv().await {
-///         match chunk {
-///             | Ok(chunk) => {
-///                 // Do something with the chunk.
-///             }
-///             | Err(error) => {
-///                 // Do something with the error.
-///             }
-///         }
-///     };
-///
-///     // Abort the stream.
-///     handle.abort();
-///
-///     Ok(())
-/// }
-/// ```
-pub async fn complete_stream(
+pub(crate) async fn complete_stream(
     client: &Client,
-    api_key: &ApiKey,
     request_body: CompletionsRequestBody,
-    buffer_size: usize,
+    buffer_size: Option<usize>,
 ) -> crate::Result<(
     Receiver<ChatStreamResult>,
     JoinHandle<()>,
@@ -335,13 +234,11 @@ pub async fn complete_stream(
         }
     }
 
+    let buffer_size = buffer_size.unwrap_or(DEFAULT_STREAM_BUFFER_SIZE);
+
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
-        .header(
-            "Authorization",
-            api_key.authorization_header(),
-        )
         .json(&request_body)
         .send()
         .await

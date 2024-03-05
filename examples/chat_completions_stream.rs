@@ -9,13 +9,12 @@ use std::sync::Arc;
 
 use clap::Parser;
 
-use openai::chat::complete_stream;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::StreamOption;
-use openai::chat::SystemMessage;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::StreamOption;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -28,8 +27,7 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let request_body = CompletionsRequestBody {
         messages: vec![
@@ -41,8 +39,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let (mut receiver, stream_handle) =
-        complete_stream(&client, &api_key, request_body, 100).await?;
+    let (mut receiver, stream_handle) = client
+        .chat_complete_stream(request_body, None)
+        .await?;
 
     let mut text_buffer = String::new();
 

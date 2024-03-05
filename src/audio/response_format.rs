@@ -259,7 +259,20 @@ impl Display for SpeechResponseFormat {
         &self,
         f: &mut Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "{}", self.format())
+        match self {
+            | Self::Mp3 => {
+                write!(f, "mp3")
+            },
+            | Self::Opus => {
+                write!(f, "opus")
+            },
+            | Self::Aac => {
+                write!(f, "aac")
+            },
+            | Self::Flac => {
+                write!(f, "flac")
+            },
+        }
     }
 }
 

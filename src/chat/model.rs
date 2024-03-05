@@ -1,4 +1,5 @@
 use crate::macros::impl_enum_string_serialization;
+use std::fmt::Display;
 
 /// The model to use for the chat.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
@@ -32,6 +33,61 @@ pub enum ChatModel {
     Gpt40613,
     /// gpt-4-32k-0613
     Gpt432k0613,
+}
+
+impl Default for ChatModel {
+    fn default() -> Self {
+        ChatModel::Gpt35Turbo
+    }
+}
+
+impl Display for ChatModel {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | ChatModel::Gpt35Turbo1106 => {
+                write!(f, "gpt-3.5-turbo-1106")
+            },
+            | ChatModel::Gpt35Turbo0613 => {
+                write!(f, "gpt-3.5-turbo-0613")
+            },
+            | ChatModel::Gpt35Turbo => {
+                write!(f, "gpt-3.5-turbo")
+            },
+            | ChatModel::Gpt35Turbo16k => {
+                write!(f, "gpt-3.5-turbo-16k")
+            },
+            | ChatModel::Gpt35TurboInstruct => {
+                write!(f, "gpt-3.5-turbo-instruct")
+            },
+            | ChatModel::Gpt40125Preview => {
+                write!(f, "gpt-4-0125-preview")
+            },
+            | ChatModel::Gpt41106VisionPreview => {
+                write!(f, "gpt-4-1106-vision-preview")
+            },
+            | ChatModel::Gpt41106Preview => {
+                write!(f, "gpt-4-1106-preview")
+            },
+            | ChatModel::Gpt4VisionPreview => {
+                write!(f, "gpt-4-vision-preview")
+            },
+            | ChatModel::Gpt4 => {
+                write!(f, "gpt-4")
+            },
+            | ChatModel::Gpt432k => {
+                write!(f, "gpt-4-32k")
+            },
+            | ChatModel::Gpt40613 => {
+                write!(f, "gpt-4-0613")
+            },
+            | ChatModel::Gpt432k0613 => {
+                write!(f, "gpt-4-32k-0613")
+            },
+        }
+    }
 }
 
 impl ChatModel {

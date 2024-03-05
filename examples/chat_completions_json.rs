@@ -7,13 +7,12 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 
-use openai::chat::complete;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::JsonResponseFormat;
-use openai::chat::SystemMessage;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::JsonResponseFormat;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -30,19 +29,18 @@ struct CustomResponse {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let prompt = r#"
         You are an AI assitant that helps people with their problems.
         You can give advice on any topic as its expert.
         Please reply to the following user message with your advice as an expert what you think suitable by using the following JSON format:
-        
+
         {
             "expert": "expert name",
             "advice": "advice"
         }
-        
+
         EXAMPLE:
         Q. "I have a headache."
         A.
@@ -50,7 +48,7 @@ async fn main() -> anyhow::Result<()> {
             "expert": "Doctor",
             "advice": "Take some medicine."
         }
-        
+
         Q. "I want to be professional football player."
         A.
         {
@@ -70,7 +68,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = complete(&client, &api_key, request_body).await?;
+    let response = client
+        .chat_complete(request_body)
+        .await?;
 
     let content = response
         .choices

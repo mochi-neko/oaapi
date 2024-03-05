@@ -8,16 +8,15 @@ use base64::Engine;
 use clap::Parser;
 use std::path::Path;
 
-use openai::chat::complete;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::ImageContentPart;
-use openai::chat::ImageFormat;
-use openai::chat::ImageUrl;
-use openai::chat::SystemMessage;
-use openai::chat::TextContentPart;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::ImageContentPart;
+use oaapi::chat::ImageFormat;
+use oaapi::chat::ImageUrl;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::TextContentPart;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -32,8 +31,7 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     // Read image file and encode it to base64.
     let image_file = std::fs::read(&arguments.image_file)?;
@@ -63,7 +61,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = complete(&client, &api_key, request_body).await?;
+    let response = client
+        .chat_complete(request_body)
+        .await?;
 
     println!(
         "Result: {:?}",

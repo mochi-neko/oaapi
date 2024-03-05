@@ -6,14 +6,13 @@
 
 use clap::Parser;
 
-use openai::chat::complete;
-use openai::chat::ChatModel;
-use openai::chat::CompletionsRequestBody;
-use openai::chat::MaxTokens;
-use openai::chat::StopOption;
-use openai::chat::SystemMessage;
-use openai::chat::UserMessage;
-use openai::ApiKey;
+use oaapi::chat::ChatModel;
+use oaapi::chat::CompletionsRequestBody;
+use oaapi::chat::MaxTokens;
+use oaapi::chat::StopOption;
+use oaapi::chat::SystemMessage;
+use oaapi::chat::UserMessage;
+use oaapi::Client;
 
 #[derive(Parser)]
 struct Arguments {
@@ -28,13 +27,12 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = reqwest::Client::new();
-    let api_key = ApiKey::from_env()?;
+    let client = Client::from_env()?;
 
     let model = ChatModel::Gpt35Turbo;
     let max_tokens = MaxTokens::new(
         arguments.max_tokens, // Max tokens.
-        model,
+        model.clone(),
     )?;
     let stop_option = StopOption::new_up_to_4(vec!["\\n", ".", "。"])?;
 
@@ -49,7 +47,9 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let response = complete(&client, &api_key, request_body).await?;
+    let response = client
+        .chat_complete(request_body)
+        .await?;
 
     println!(
         "Result: {:?}",

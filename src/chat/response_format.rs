@@ -2,6 +2,7 @@ use crate::macros::{
     impl_enum_string_serialization, impl_enum_struct_serialization,
 };
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// The response format of chat.
 #[derive(Debug, Clone, PartialEq)]
@@ -10,6 +11,28 @@ pub enum ResponseFormat {
     Text(TextResponseFormat),
     /// JSON
     Json(JsonResponseFormat),
+}
+
+impl Default for ResponseFormat {
+    fn default() -> Self {
+        Self::Text(TextResponseFormat::default())
+    }
+}
+
+impl Display for ResponseFormat {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | ResponseFormat::Text(_) => {
+                write!(f, "text")
+            },
+            | ResponseFormat::Json(_) => {
+                write!(f, "json_object")
+            },
+        }
+    }
 }
 
 impl_enum_struct_serialization!(
@@ -28,6 +51,28 @@ pub enum ResponseFormatType {
     Json,
 }
 
+impl Default for ResponseFormatType {
+    fn default() -> Self {
+        Self::Text
+    }
+}
+
+impl Display for ResponseFormatType {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | ResponseFormatType::Text => {
+                write!(f, "text")
+            },
+            | ResponseFormatType::Json => {
+                write!(f, "json_object")
+            },
+        }
+    }
+}
+
 impl_enum_string_serialization!(
     ResponseFormatType,
     Text => "text",
@@ -40,6 +85,21 @@ pub struct TextResponseFormat {
     /// Must be "text".
     #[serde(rename = "type")]
     pub _type: ResponseFormatType,
+}
+
+impl Default for TextResponseFormat {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Display for TextResponseFormat {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "text")
+    }
 }
 
 impl TextResponseFormat {
@@ -56,6 +116,21 @@ pub struct JsonResponseFormat {
     /// Must be "json_object".
     #[serde(rename = "type")]
     pub _type: ResponseFormatType,
+}
+
+impl Default for JsonResponseFormat {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Display for JsonResponseFormat {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "json_object")
+    }
 }
 
 impl JsonResponseFormat {

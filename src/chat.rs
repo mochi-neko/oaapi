@@ -1,5 +1,3 @@
-pub use api::completions::complete;
-pub use api::completions::complete_stream;
 pub use api::completions::CompletionsRequestBody;
 pub use assistant_message::AssistantMessage;
 pub use assistant_message::CalledFunction;
@@ -42,6 +40,9 @@ pub use user_message::MessageContent;
 pub use user_message::MessageContentPart;
 pub use user_message::TextContentPart;
 pub use user_message::UserMessage;
+
+pub(crate) use api::completions::complete;
+pub(crate) use api::completions::complete_stream;
 
 mod api;
 mod assistant_message;
