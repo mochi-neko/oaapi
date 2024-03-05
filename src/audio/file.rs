@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use reqwest::multipart::Part;
 
-use crate::Error;
-use crate::Result;
+use crate::audio::AudioApiError;
+use crate::audio::AudioApiResult;
 use crate::ValidationError;
 use crate::ValidationResult;
 
@@ -13,12 +13,16 @@ use crate::ValidationResult;
 pub enum File {
     /// The file path of the audio file.
     FilePath {
+        /// The name of the audio file.
         name: String,
+        /// The path of the audio file.
         path: PathBuf,
     },
     /// The binary of the audio file.
     Binary {
+        /// The name of the audio file.
         name: String,
+        /// The binary of the audio file.
         data: Vec<u8>,
     },
 }
@@ -41,7 +45,7 @@ impl Display for File {
             | File::FilePath {
                 name,
                 path,
-            } => write!(f, "{} ({})", name, path.display()),
+            } => write!(f, "{} (at {})", name, path.display()),
             | File::Binary {
                 name: file_name,
                 data,
@@ -124,7 +128,7 @@ impl File {
     }
 
     /// Builds a multipart form from the file.
-    pub(crate) async fn build_part(self) -> Result<Part> {
+    pub(crate) async fn build_part(self) -> AudioApiResult<Part> {
         match self {
             | File::FilePath {
                 name,
@@ -132,7 +136,7 @@ impl File {
             } => {
                 let file = tokio::fs::read(path)
                     .await
-                    .map_err(Error::IOError)?;
+                    .map_err(AudioApiError::IOError)?;
 
                 Ok(Part::bytes(file).file_name(name))
             },

@@ -2,53 +2,43 @@ use std::fmt::Display;
 
 /// The error of an API calling.
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
-    /// IO error with an API calling.
-    #[error("IO error: {0}")]
-    IOError(std::io::Error),
+pub enum ApiError {
     /// HTTP request error of an API calling.
-    #[error("HTTP request error: {0}")]
+    #[error("HTTP request error: {0:?}")]
     HttpRequestError(reqwest::Error),
     /// Reading response text failed of an API calling.
-    #[error("Reading response text failed: {0}")]
+    #[error("Reading response text failed: {0:?}")]
     ReadResponseTextFailed(reqwest::Error),
-    /// Failed to format response of an audio API calling.
-    #[error("Failed to format response of audio: {0:?}")]
-    FormatResponseFailed(crate::audio::TextFormatError),
     /// Failed to deserialize response of an API calling.
-    #[error("Failed to deserialize response as JSON: {error:?}, {text}")]
+    #[error("Failed to deserialize response as JSON: {error:?}, {text:?}")]
     ResponseDeserializationFailed {
         error: serde_json::Error,
         text: String,
     },
     /// Failed to deserialize response of an API calling.
-    #[error("Failed to deserialize error response as JSON: {error:?}, {text}")]
+    #[error(
+        "Failed to deserialize error response as JSON: {error:?}, {text:?}"
+    )]
     ErrorResponseDeserializationFailed {
         error: serde_json::Error,
         text: String,
     },
-    /// API error of an API calling.
-    #[error("API error: {status_code}, {error_response:?}")]
-    ApiError {
+    /// API response error of an API calling.
+    #[error("API error: {status_code:?}, {error_response:?}")]
+    ApiResponseError {
         status_code: reqwest::StatusCode,
-        error_response: ApiError,
+        error_response: ErrorResponse,
     },
-    /// Stream option mismatch.
-    #[error("Stream option mismatch")]
-    StreamOptionMismatch,
-    /// Timestamp option mismatch.
-    #[error("Stream option mismatch, this is only available for verbose_json response format.")]
-    TimestampOptionMismatch,
 }
 
-/// The error format of an API error.
+/// The error response of an API calling.
 #[derive(serde::Deserialize, Debug)]
-pub struct ApiError {
+pub struct ErrorResponse {
     #[serde(rename = "error")]
     pub error: ApiErrorBody,
 }
 
-/// The error body of an API error.
+/// The error body of an API error response.
 #[derive(serde::Deserialize, Debug)]
 pub struct ApiErrorBody {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -79,4 +69,3 @@ impl Display for ValidationError {
         )
     }
 }
-

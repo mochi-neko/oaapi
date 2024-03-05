@@ -1,10 +1,10 @@
 pub use crate::api_key::ApiKey;
 pub use crate::client::Client;
-pub use crate::error::Error;
+pub use crate::error::ApiError;
 pub use crate::error::ValidationError;
 pub use crate::organization_id::OrganizationId;
 pub use crate::prompt::Prompt;
-pub use crate::result::Result;
+pub use crate::result::ApiResult;
 pub use crate::result::ValidationResult;
 pub use crate::temperature::Temperature;
 

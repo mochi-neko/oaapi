@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 
-use crate::chat::Bias;
 use crate::chat::ChatCompletionChunkObject;
 use crate::chat::ChatCompletionObject;
 use crate::chat::ChatModel;
@@ -22,9 +21,10 @@ use crate::chat::Tool;
 use crate::chat::ToolChoice;
 use crate::chat::TopLogprobs;
 use crate::chat::TopP;
+use crate::chat::{Bias, ChatApiError, ChatApiResult};
 use crate::stream_line_reader::StreamLineReader;
+use crate::ApiError;
 use crate::Client;
-use crate::Error;
 use crate::Temperature;
 
 const DEFAULT_STREAM_BUFFER_SIZE: usize = 100;
@@ -163,11 +163,11 @@ impl Default for CompletionsRequestBody {
 pub(crate) async fn complete(
     client: &Client,
     request_body: CompletionsRequestBody,
-) -> crate::Result<ChatCompletionObject> {
+) -> ChatApiResult<ChatCompletionObject> {
     // Check stream option.
     if let Some(stream) = request_body.stream {
         if stream != StreamOption::ReturnOnce {
-            return Err(Error::StreamOptionMismatch);
+            return Err(ChatApiError::StreamOptionMismatch);
         }
     }
 
@@ -177,7 +177,7 @@ pub(crate) async fn complete(
         .json(&request_body)
         .send()
         .await
-        .map_err(Error::HttpRequestError)?;
+        .map_err(ApiError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -186,16 +186,19 @@ pub(crate) async fn complete(
     let response_text = response
         .text()
         .await
-        .map_err(Error::ReadResponseTextFailed)?;
+        .map_err(ApiError::ReadResponseTextFailed)?;
 
     // Ok
     if status_code.is_success() {
         // Deserialize the response.
         serde_json::from_str(&response_text).map_err(|error| {
-            Error::ResponseDeserializationFailed {
-                error,
-                text: response_text,
+            {
+                ApiError::ResponseDeserializationFailed {
+                    error,
+                    text: response_text,
+                }
             }
+            .into()
         })
     }
     // Error
@@ -203,16 +206,17 @@ pub(crate) async fn complete(
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                Error::ErrorResponseDeserializationFailed {
+                ApiError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(Error::ApiError {
+        Err(ApiError::ApiResponseError {
             status_code,
             error_response,
-        })
+        }
+        .into())
     }
 }
 
@@ -220,17 +224,17 @@ pub(crate) async fn complete_stream(
     client: &Client,
     request_body: CompletionsRequestBody,
     buffer_size: Option<usize>,
-) -> crate::Result<(
+) -> ChatApiResult<(
     Receiver<ChatStreamResult>,
     JoinHandle<()>,
 )> {
     // Check stream option.
     if request_body.stream.is_none() {
-        return Err(Error::StreamOptionMismatch);
+        return Err(ChatApiError::StreamOptionMismatch);
     }
     if let Some(stream) = request_body.stream {
         if stream != StreamOption::ReturnStream {
-            return Err(Error::StreamOptionMismatch);
+            return Err(ChatApiError::StreamOptionMismatch);
         }
     }
 
@@ -242,7 +246,7 @@ pub(crate) async fn complete_stream(
         .json(&request_body)
         .send()
         .await
-        .map_err(Error::HttpRequestError)?;
+        .map_err(ApiError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -324,20 +328,21 @@ pub(crate) async fn complete_stream(
         let response_text = response
             .text()
             .await
-            .map_err(Error::ReadResponseTextFailed)?;
+            .map_err(ApiError::ReadResponseTextFailed)?;
 
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                Error::ErrorResponseDeserializationFailed {
+                ApiError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(Error::ApiError {
+        Err(ApiError::ApiResponseError {
             status_code,
             error_response,
-        })
+        }
+        .into())
     }
 }

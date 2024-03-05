@@ -12,7 +12,7 @@ use crate::audio::SpeechStreamResult;
 use crate::audio::Speed;
 use crate::audio::Voice;
 use crate::Client;
-use crate::Error;
+use crate::ApiError;
 
 const DEFAULT_STREAM_BUFFER_SIZE: usize = 16 * 1024;
 
@@ -71,7 +71,7 @@ pub(crate) async fn speech(
     client: &Client,
     request_body: SpeechRequestBody,
     buffer_size: Option<usize>,
-) -> crate::Result<(
+) -> crate::ApiResult<(
     Receiver<SpeechStreamResult>,
     JoinHandle<()>,
 )> {
@@ -83,7 +83,7 @@ pub(crate) async fn speech(
         .json(&request_body)
         .send()
         .await
-        .map_err(Error::HttpRequestError)?;
+        .map_err(ApiError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -126,18 +126,18 @@ pub(crate) async fn speech(
         let response_text = response
             .text()
             .await
-            .map_err(Error::ReadResponseTextFailed)?;
+            .map_err(ApiError::ReadResponseTextFailed)?;
 
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                Error::ErrorResponseDeserializationFailed {
+                ApiError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(Error::ApiError {
+        Err(ApiError::ApiResponseError {
             status_code,
             error_response,
         })

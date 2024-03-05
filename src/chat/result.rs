@@ -3,3 +3,6 @@ use crate::chat::ChatStreamError;
 
 /// The result of streaming chat completions.
 pub type ChatStreamResult = Result<ChatCompletionChunkObject, ChatStreamError>;
+
+/// The result of a chat API calling.
+pub type ChatApiResult<T> = Result<T, crate::chat::error::ChatApiError>;

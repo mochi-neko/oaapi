@@ -1,13 +1,14 @@
 use crate::audio::{
-    JsonResponse, SpeechRequestBody, SpeechStreamResult,
+    AudioApiResult, JsonResponse, SpeechRequestBody, SpeechStreamResult,
     TranscriptionsRequestBody, TranslationsRequestBody, VerboseJsonResponse,
 };
 use crate::chat::{
-    ChatCompletionObject, ChatStreamResult, CompletionsRequestBody,
+    ChatApiResult, ChatCompletionObject, ChatStreamResult,
+    CompletionsRequestBody,
 };
 use crate::ApiKey;
+use crate::ApiResult;
 use crate::OrganizationId;
-use crate::Result;
 
 use std::env::VarError;
 
@@ -94,7 +95,7 @@ impl Client {
         &self,
         request_body: SpeechRequestBody,
         buffer_size: Option<usize>,
-    ) -> Result<(
+    ) -> ApiResult<(
         Receiver<SpeechStreamResult>,
         JoinHandle<()>,
     )> {
@@ -104,70 +105,70 @@ impl Client {
     pub async fn audio_transcribe_into_json(
         &self,
         request_body: TranscriptionsRequestBody,
-    ) -> Result<JsonResponse> {
+    ) -> AudioApiResult<JsonResponse> {
         crate::audio::transcribe_into_json(&self, request_body).await
     }
 
     pub async fn audio_transcribe_into_plain_text(
         &self,
         request_body: TranscriptionsRequestBody,
-    ) -> Result<String> {
+    ) -> AudioApiResult<String> {
         crate::audio::transcribe_into_plain_text(&self, request_body).await
     }
 
     pub async fn audio_transcribe_into_verbose_json(
         &self,
         request_body: TranscriptionsRequestBody,
-    ) -> Result<VerboseJsonResponse> {
+    ) -> AudioApiResult<VerboseJsonResponse> {
         crate::audio::transcribe_into_verbose_json(&self, request_body).await
     }
 
     pub async fn audio_transcribe_into_srt(
         &self,
         request_body: TranscriptionsRequestBody,
-    ) -> Result<SubRip> {
+    ) -> AudioApiResult<SubRip> {
         crate::audio::transcribe_into_srt(&self, request_body).await
     }
 
     pub async fn audio_transcribe_into_vtt(
         &self,
         request_body: TranscriptionsRequestBody,
-    ) -> Result<WebVtt> {
+    ) -> AudioApiResult<WebVtt> {
         crate::audio::transcribe_into_vtt(&self, request_body).await
     }
 
     pub async fn audio_translate_into_json(
         &self,
         request_body: TranslationsRequestBody,
-    ) -> Result<JsonResponse> {
+    ) -> AudioApiResult<JsonResponse> {
         crate::audio::translate_into_json(&self, request_body).await
     }
 
     pub async fn audio_translate_into_plain_text(
         &self,
         request_body: TranslationsRequestBody,
-    ) -> Result<String> {
+    ) -> AudioApiResult<String> {
         crate::audio::translate_into_plain_text(&self, request_body).await
     }
 
     pub async fn audio_translate_into_verbose_json(
         &self,
         request_body: TranslationsRequestBody,
-    ) -> Result<VerboseJsonResponse> {
+    ) -> AudioApiResult<VerboseJsonResponse> {
         crate::audio::translate_into_verbose_json(&self, request_body).await
     }
 
     pub async fn audio_translate_into_srt(
         &self,
         request_body: TranslationsRequestBody,
-    ) -> Result<SubRip> {
+    ) -> AudioApiResult<SubRip> {
         crate::audio::translate_into_srt(&self, request_body).await
     }
 
     pub async fn audio_translate_into_vtt(
         &self,
         request_body: TranslationsRequestBody,
-    ) -> Result<WebVtt> {
+    ) -> AudioApiResult<WebVtt> {
         crate::audio::translate_into_vtt(&self, request_body).await
     }
 }
@@ -177,7 +178,7 @@ impl Client {
     pub async fn chat_complete(
         &self,
         request_body: CompletionsRequestBody,
-    ) -> Result<ChatCompletionObject> {
+    ) -> ChatApiResult<ChatCompletionObject> {
         crate::chat::complete(&self, request_body).await
     }
 
@@ -185,7 +186,7 @@ impl Client {
         &self,
         request_body: CompletionsRequestBody,
         buffer_size: Option<usize>,
-    ) -> Result<(
+    ) -> ChatApiResult<(
         Receiver<ChatStreamResult>,
         JoinHandle<()>,
     )> {

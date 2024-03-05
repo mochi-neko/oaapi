@@ -3,6 +3,8 @@ use std::fmt::Display;
 use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
 
+use crate::audio::AudioApiError;
+use crate::audio::AudioApiResult;
 use crate::audio::AudioModel;
 use crate::audio::File;
 use crate::audio::JsonResponse;
@@ -14,10 +16,9 @@ use crate::audio::TextResponseFormatter;
 use crate::audio::VerboseJsonResponse;
 use crate::audio::VerboseJsonResponseFormatter;
 use crate::audio::VttResponseFormatter;
+use crate::ApiError;
 use crate::Client;
-use crate::Error;
 use crate::Prompt;
-use crate::Result;
 use crate::Temperature;
 
 /// The response from the /audio/translations endpoint.
@@ -83,7 +84,7 @@ impl TranslationsRequestBody {
     }
 
     /// Builds a multipart form from the request body.
-    async fn build_form<F, T>(self) -> Result<Form>
+    async fn build_form<F, T>(self) -> AudioApiResult<Form>
     where
         F: TextResponseFormat,
         T: TextResponseFormatter<F>,
@@ -110,7 +111,7 @@ impl TranslationsRequestBody {
 async fn translate<F, T>(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<F>
+) -> AudioApiResult<F>
 where
     F: TextResponseFormat,
     T: TextResponseFormatter<F>,
@@ -126,7 +127,7 @@ where
         .multipart(form)
         .send()
         .await
-        .map_err(Error::HttpRequestError)?;
+        .map_err(ApiError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -135,49 +136,50 @@ where
     let response_text = response
         .text()
         .await
-        .map_err(Error::ReadResponseTextFailed)?;
+        .map_err(ApiError::ReadResponseTextFailed)?;
 
     // Ok
     if status_code.is_success() {
         // Format the response text.
-        T::format(response_text).map_err(Error::FormatResponseFailed)
+        T::format(response_text).map_err(AudioApiError::FormatResponseFailed)
     }
     // Error
     else {
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                Error::ErrorResponseDeserializationFailed {
+                ApiError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(Error::ApiError {
+        Err(ApiError::ApiResponseError {
             status_code,
             error_response,
-        })
+        }
+        .into())
     }
 }
 
 pub(crate) async fn translate_into_json(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<JsonResponse> {
+) -> AudioApiResult<JsonResponse> {
     translate::<JsonResponse, JsonResponseFormatter>(client, request_body).await
 }
 
 pub(crate) async fn translate_into_plain_text(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<String> {
+) -> AudioApiResult<String> {
     translate::<String, PlainTextResponseFormatter>(client, request_body).await
 }
 
 pub(crate) async fn translate_into_verbose_json(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<VerboseJsonResponse> {
+) -> AudioApiResult<VerboseJsonResponse> {
     translate::<VerboseJsonResponse, VerboseJsonResponseFormatter>(
         client,
         request_body,
@@ -188,13 +190,13 @@ pub(crate) async fn translate_into_verbose_json(
 pub(crate) async fn translate_into_srt(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<SubRip> {
+) -> AudioApiResult<SubRip> {
     translate::<SubRip, SrtResponseFormatter>(client, request_body).await
 }
 
 pub(crate) async fn translate_into_vtt(
     client: &Client,
     request_body: TranslationsRequestBody,
-) -> Result<WebVtt> {
+) -> AudioApiResult<WebVtt> {
     translate::<WebVtt, VttResponseFormatter>(client, request_body).await
 }
