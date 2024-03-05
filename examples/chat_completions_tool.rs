@@ -6,6 +6,7 @@
 
 use clap::Parser;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 use oaapi::chat::ChatModel;
 use oaapi::chat::CompletionsRequestBody;
@@ -30,12 +31,43 @@ struct GetCurrentWeather {
     unit: Option<Unit>,
 }
 
+impl Display for GetCurrentWeather {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "Location: {}", self.location)?;
+
+        if let Some(unit) = &self.unit {
+            write!(f, ", Unit: {}", unit)?;
+        }
+
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 enum Unit {
     /// celsius
     Celsius,
     /// fahrenheit
     Fahrenheit,
+}
+
+impl Display for Unit {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                | Unit::Celsius => "celsius",
+                | Unit::Fahrenheit => "fahrenheit",
+            }
+        )
+    }
 }
 
 impl Serialize for Unit {
@@ -133,7 +165,7 @@ async fn main() -> anyhow::Result<()> {
     let called_function =
         serde_json::from_str::<GetCurrentWeather>(&arguments)?;
 
-    println!("Result: {:?}", called_function);
+    println!("Result:\n{}", called_function);
 
     Ok(())
 }

@@ -6,6 +6,7 @@
 
 use clap::Parser;
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 use oaapi::chat::ChatModel;
 use oaapi::chat::CompletionsRequestBody;
@@ -24,6 +25,19 @@ struct Arguments {
 struct CustomResponse {
     expert: String,
     advice: String,
+}
+
+impl Display for CustomResponse {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(
+            f,
+            "Expert: {}, Advice: {}",
+            self.expert, self.advice
+        )
+    }
 }
 
 #[tokio::main]
@@ -84,7 +98,7 @@ async fn main() -> anyhow::Result<()> {
     // Deserialize custom JSON response.
     let custom_response = serde_json::from_str::<CustomResponse>(&content)?;
 
-    println!("Result: {:?}", custom_response);
+    println!("Result:\n{}", custom_response);
 
     Ok(())
 }

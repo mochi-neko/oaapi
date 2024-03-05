@@ -6,18 +6,10 @@ use std::fmt::Display;
 ///
 /// ## Range
 /// The penalty must be between -2.0 and 2.0.
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Penalty {
     value: f32,
-}
-
-impl Default for Penalty {
-    fn default() -> Self {
-        Self {
-            value: 0.0,
-        }
-    }
 }
 
 impl Display for Penalty {

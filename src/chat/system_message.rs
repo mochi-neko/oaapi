@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 
 use crate::chat::Role;
+use crate::macros::impl_display_for_serialize;
 use crate::Prompt;
 
 /// A system message.
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct SystemMessage {
     /// The contents of the system message.
     content: String,
@@ -15,6 +16,18 @@ pub struct SystemMessage {
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
 }
+
+impl Default for SystemMessage {
+    fn default() -> Self {
+        Self {
+            content: "".to_string(),
+            role: Role::System,
+            name: None,
+        }
+    }
+}
+
+impl_display_for_serialize!(SystemMessage);
 
 impl SystemMessage {
     pub fn new<S>(

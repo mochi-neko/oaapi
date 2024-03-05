@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-use crate::macros::impl_enum_string_serialization;
+use crate::macros::{
+    impl_display_for_serialize, impl_enum_string_serialization,
+};
 
 /// Tool that the model may call.
 #[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -13,18 +15,7 @@ pub struct Tool {
     pub function: Function,
 }
 
-impl Display for Tool {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(
-            f,
-            "type: {}, function: {}",
-            self._type, self.function
-        )
-    }
-}
+impl_display_for_serialize!(Tool);
 
 impl Tool {
     pub fn new(function: Function) -> Self {
@@ -85,28 +76,4 @@ pub struct Function {
     pub parameters: Option<serde_json::Map<String, serde_json::Value>>,
 }
 
-impl Display for Function {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "name: {}\n", self.name)?;
-
-        if let Some(description) = &self.description {
-            write!(f, "description: {}\n", description)?;
-        }
-
-        if let Some(parameters) = &self.parameters {
-            write!(f, "parameters: [")?;
-            for (i, (key, value)) in parameters.iter().enumerate() {
-                if i > 0 {
-                    write!(f, ", ")?;
-                }
-                write!(f, "{}: {}", key, value)?;
-            }
-            write!(f, "]\n")?;
-        }
-
-        Ok(())
-    }
-}
+impl_display_for_serialize!(Function);

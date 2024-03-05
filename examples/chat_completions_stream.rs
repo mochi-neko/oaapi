@@ -56,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
         while let Some(response) = receiver.recv().await {
             match response {
                 | Ok(chunk) => {
-                    println!("Delta: {:?}", chunk);
+                    println!("Delta: {}", chunk);
                     text_buffer.push_str(
                         chunk
                             .choices

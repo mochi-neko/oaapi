@@ -2,7 +2,9 @@ use crate::chat::AssistantMessage;
 use crate::chat::SystemMessage;
 use crate::chat::ToolMessage;
 use crate::chat::UserMessage;
-use crate::macros::impl_enum_struct_serialization;
+use crate::macros::{
+    impl_display_for_serialize, impl_enum_struct_serialization,
+};
 
 /// A message of chat.
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -16,6 +18,14 @@ pub enum Message {
     /// Tool message.
     Tool(ToolMessage),
 }
+
+impl Default for Message {
+    fn default() -> Self {
+        Self::User(UserMessage::default())
+    }
+}
+
+impl_display_for_serialize!(Message);
 
 impl_enum_struct_serialization!(
     Message,

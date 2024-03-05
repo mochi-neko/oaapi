@@ -52,7 +52,7 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     println!(
-        "Result: {:?}",
+        "Result:\n{}",
         response
             .choices
             .first()

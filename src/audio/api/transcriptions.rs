@@ -1,4 +1,5 @@
 use reqwest::multipart::Form;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display};
 use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
@@ -24,7 +25,7 @@ use crate::Prompt;
 use crate::Temperature;
 
 /// The response from the /audio/transcriptions endpoint.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct TranscriptionsRequestBody {
     /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
     pub file: File,
@@ -43,45 +44,36 @@ pub struct TranscriptionsRequestBody {
     pub timestamp_granularities: Option<Vec<TimestampGranularity>>,
 }
 
-impl Default for TranscriptionsRequestBody {
-    fn default() -> Self {
-        Self {
-            file: File::default(),
-            model: AudioModel::default(),
-            language: None,
-            prompt: None,
-            temperature: None,
-            timestamp_granularities: None,
-        }
-    }
-}
-
 impl Display for TranscriptionsRequestBody {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "file: {}\n", self.file)?;
-        write!(f, "model: {}\n", self.model)?;
+        write!(f, "file: {}", self.file)?;
+        write!(f, ", model: {}", self.model)?;
 
         if let Some(language) = self.language {
-            write!(f, "language: {}\n", language)?;
+            write!(f, ", language: {}", language)?;
         }
         if let Some(prompt) = self.prompt.clone() {
-            write!(f, "prompt: {}\n", prompt)?;
+            write!(f, ", prompt: {}", prompt)?;
         }
         if let Some(temperature) = self.temperature {
-            write!(f, "temperature: {}\n", temperature)?;
+            write!(f, ", temperature: {}", temperature)?;
         }
         if let Some(timestamp_granularities) = self
             .timestamp_granularities
             .clone()
         {
-            write!(f, "timestamp_granularities: [",)?;
-            for granularity in timestamp_granularities {
-                write!(f, "{}", granularity)?;
-            }
-            write!(f, "]\n")?;
+            write!(
+                f,
+                ", timestamp_granularities: [{}]",
+                timestamp_granularities
+                    .iter()
+                    .map(|granularity| granularity.to_string())
+                    .collect::<Vec<String>>()
+                    .join(", ")
+            )?;
         }
 
         Ok(())

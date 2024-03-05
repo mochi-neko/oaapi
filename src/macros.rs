@@ -462,6 +462,43 @@ macro_rules! impl_enum_with_string_or_array_serialization {
 
 pub(crate) use impl_enum_with_string_or_array_serialization;
 
+/// Implements [`std::fmt::Display`] for a type that can be serialized.
+///
+/// ## Arguments
+/// - `$t`: The type.
+///
+/// ## Example
+/// ```
+/// // use crate::macros::impl_display_for_serialize;
+/// use serde::{Serialize, Deserialize};
+///
+/// #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+/// struct TestStruct {
+///    value: u32,
+/// }
+///
+/// // impl_display_for_serialize!(TestStruct);
+///
+/// let test = TestStruct { value: 42 };
+/// assert_eq!(test.to_string(), "{\n  \"value\": 42\n}");
+/// ```
+macro_rules! impl_display_for_serialize {
+    ($t:ty) => {
+        impl std::fmt::Display for $t {
+            fn fmt(
+                &self,
+                f: &mut std::fmt::Formatter<'_>,
+            ) -> std::fmt::Result {
+                let json = serde_json::to_string_pretty(self)
+                    .map_err(|_| std::fmt::Error)?;
+                write!(f, "{}", json)
+            }
+        }
+    };
+}
+
+pub(crate) use impl_display_for_serialize;
+
 #[cfg(test)]
 mod test {
     use serde::{Deserialize, Serialize};
@@ -642,5 +679,23 @@ mod test {
         assert_eq!(serialized, "[{\"value\":42}]");
         let deserialized: TestEnum = serde_json::from_str(&serialized).unwrap();
         assert_eq!(deserialized, test);
+    }
+
+    #[test]
+    fn display_for_serialize() {
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        struct TestStruct {
+            value: u32,
+        }
+
+        impl_display_for_serialize!(TestStruct);
+
+        let test = TestStruct {
+            value: 42,
+        };
+        assert_eq!(
+            test.to_string(),
+            "{\n  \"value\": 42\n}"
+        );
     }
 }

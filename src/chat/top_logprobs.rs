@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 
@@ -5,10 +6,19 @@ use serde::{Deserialize, Serialize};
 ///
 /// ## Range
 /// The penalty must be between 0 and 5.
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct TopLogprobs {
     value: u32,
+}
+
+impl Display for TopLogprobs {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl TopLogprobs {

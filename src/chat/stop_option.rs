@@ -26,16 +26,7 @@ impl Display for StopOption {
             | StopOption::SingleSequence(s) => {
                 write!(f, "{}", s)
             },
-            | StopOption::UpTo4Sequences(s) => {
-                write!(f, "[")?;
-                for (i, s) in s.iter().enumerate() {
-                    if i > 0 {
-                        write!(f, ", ")?;
-                    }
-                    write!(f, "{}", s)?;
-                }
-                write!(f, "]")
-            },
+            | StopOption::UpTo4Sequences(s) => write!(f, "[{}]", s.join(", ")),
         }
     }
 }

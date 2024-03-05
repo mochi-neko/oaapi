@@ -6,18 +6,10 @@ use std::fmt::Display;
 ///
 /// ## Range
 /// The value must be between -100.0 and 100.0.
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Bias {
     value: f32,
-}
-
-impl Default for Bias {
-    fn default() -> Self {
-        Self {
-            value: 0.0,
-        }
-    }
 }
 
 impl Display for Bias {

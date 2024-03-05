@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 use crate::chat::ToolType;
-use crate::macros::impl_enum_string_serialization;
+use crate::macros::{
+    impl_display_for_serialize, impl_enum_string_serialization,
+};
 
 /// The tool choice.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -13,6 +16,14 @@ pub enum ToolChoice {
     Specified(SpecifiedTool),
 }
 
+impl Default for ToolChoice {
+    fn default() -> Self {
+        Self::Option(TooChoiceOption::default())
+    }
+}
+
+impl_display_for_serialize!(ToolChoice);
+
 /// The tool choice option.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum TooChoiceOption {
@@ -20,6 +31,28 @@ pub enum TooChoiceOption {
     None,
     /// auto, means the model can pick between generating a message or calling a function.
     Auto,
+}
+
+impl Default for TooChoiceOption {
+    fn default() -> Self {
+        TooChoiceOption::Auto
+    }
+}
+
+impl Display for TooChoiceOption {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        match self {
+            | TooChoiceOption::None => {
+                write!(f, "none")
+            },
+            | TooChoiceOption::Auto => {
+                write!(f, "auto")
+            },
+        }
+    }
 }
 
 impl_enum_string_serialization!(
@@ -41,7 +74,7 @@ impl From<SpecifiedTool> for ToolChoice {
 }
 
 /// Specified tool.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpecifiedTool {
     /// The type of the tool. Currently, only function is supported.
     #[serde(rename = "type")]
@@ -50,12 +83,16 @@ pub struct SpecifiedTool {
     pub function: SpecifiedFunction,
 }
 
+impl_display_for_serialize!(SpecifiedTool);
+
 /// Specified function.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpecifiedFunction {
     /// The name of function.
     pub name: String,
 }
+
+impl_display_for_serialize!(SpecifiedFunction);
 
 #[cfg(test)]
 mod test {

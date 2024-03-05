@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::chat::AssistantMessage;
 use crate::chat::ChatModel;
 use crate::chat::Logprobs;
+use crate::macros::impl_display_for_serialize;
 
 /// The chat completion object.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -26,6 +27,8 @@ pub struct ChatCompletionObject {
     pub usage: Usage,
 }
 
+impl_display_for_serialize!(ChatCompletionObject);
+
 /// The choice of chat completion object.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChatCompletionChoice {
@@ -41,6 +44,8 @@ pub struct ChatCompletionChoice {
     pub logprobs: Option<Logprobs>,
 }
 
+impl_display_for_serialize!(ChatCompletionChoice);
+
 /// Usage statistics for the completion request.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Usage {
@@ -51,6 +56,8 @@ pub struct Usage {
     /// Total number of tokens used in the request (prompt + completion).
     pub total_tokens: u32,
 }
+
+impl_display_for_serialize!(Usage);
 
 #[cfg(test)]
 mod test {

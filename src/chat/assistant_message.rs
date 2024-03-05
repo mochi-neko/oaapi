@@ -1,10 +1,12 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 use crate::chat::Role;
 use crate::chat::ToolType;
+use crate::macros::impl_display_for_serialize;
 
 /// An assistant message.
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct AssistantMessage {
     /// The contents of the assistant message.
     /// Required unless tool_calls or function_call is specified.
@@ -20,6 +22,19 @@ pub struct AssistantMessage {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_calls: Option<Vec<ToolCall>>,
 }
+
+impl Default for AssistantMessage {
+    fn default() -> Self {
+        Self {
+            content: None,
+            role: Role::Assistant,
+            name: None,
+            tool_calls: None,
+        }
+    }
+}
+
+impl_display_for_serialize!(AssistantMessage);
 
 impl AssistantMessage {
     pub fn new(
@@ -37,7 +52,7 @@ impl AssistantMessage {
 }
 
 /// A tool call.
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct ToolCall {
     /// The ID of the tool call.
     pub id: String,
@@ -48,8 +63,10 @@ pub struct ToolCall {
     pub function: CalledFunction,
 }
 
+impl_display_for_serialize!(ToolCall);
+
 /// A function that the model called by tool.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct CalledFunction {
     /// The name of the function to call.
     pub name: String,
@@ -58,6 +75,8 @@ pub struct CalledFunction {
     /// Validate the arguments in your code before calling your function.
     pub arguments: String,
 }
+
+impl_display_for_serialize!(CalledFunction);
 
 #[cfg(test)]
 mod test {

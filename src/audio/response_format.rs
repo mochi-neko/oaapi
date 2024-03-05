@@ -4,7 +4,9 @@ use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
 use subtp::ParseError;
 
-use crate::macros::impl_enum_string_serialization;
+use crate::macros::{
+    impl_display_for_serialize, impl_enum_string_serialization,
+};
 
 /// Format of a response text.
 pub trait TextResponseFormat {
@@ -63,17 +65,7 @@ impl TextResponseFormat for JsonResponse {
     }
 }
 
-impl Display for JsonResponse {
-    fn fmt(
-        &self,
-        f: &mut Formatter<'_>,
-    ) -> std::fmt::Result {
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|_error| std::fmt::Error)?;
-
-        write!(f, "{}", json)
-    }
-}
+impl_display_for_serialize!(JsonResponse);
 
 /// The JSON response formatter.
 pub struct JsonResponseFormatter {}
@@ -117,17 +109,7 @@ pub struct VerboseJsonResponse {
     pub words: Option<Vec<VerboseJsonResponseWord>>,
 }
 
-impl Display for VerboseJsonResponse {
-    fn fmt(
-        &self,
-        f: &mut Formatter<'_>,
-    ) -> std::fmt::Result {
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|_error| std::fmt::Error)?;
-
-        write!(f, "{}", json)
-    }
-}
+impl_display_for_serialize!(VerboseJsonResponse);
 
 /// The segment of a verbose JSON response for segment level timestamp.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -144,17 +126,7 @@ pub struct VerboseJsonResponseSegment {
     pub no_speech_prob: f32,
 }
 
-impl Display for VerboseJsonResponseSegment {
-    fn fmt(
-        &self,
-        f: &mut Formatter<'_>,
-    ) -> std::fmt::Result {
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|_error| std::fmt::Error)?;
-
-        write!(f, "{}", json)
-    }
-}
+impl_display_for_serialize!(VerboseJsonResponseSegment);
 
 /// The word of a verbose JSON response for word level timestamp.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -164,17 +136,7 @@ pub struct VerboseJsonResponseWord {
     pub end: f32,
 }
 
-impl Display for VerboseJsonResponseWord {
-    fn fmt(
-        &self,
-        f: &mut Formatter<'_>,
-    ) -> std::fmt::Result {
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|_error| std::fmt::Error)?;
-
-        write!(f, "{}", json)
-    }
-}
+impl_display_for_serialize!(VerboseJsonResponseWord);
 
 impl TextResponseFormat for VerboseJsonResponse {
     fn format() -> &'static str {

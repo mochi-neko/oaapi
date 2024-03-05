@@ -1,8 +1,9 @@
 use crate::macros::{
-    impl_enum_string_serialization, impl_enum_struct_serialization,
+    impl_display_for_serialize, impl_enum_string_serialization,
+    impl_enum_struct_serialization,
 };
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 /// The response format of chat.
 #[derive(Debug, Clone, PartialEq)]
@@ -25,11 +26,11 @@ impl Display for ResponseFormat {
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
         match self {
-            | ResponseFormat::Text(_) => {
-                write!(f, "text")
+            | ResponseFormat::Text(text) => {
+                write!(f, "{}", text)
             },
-            | ResponseFormat::Json(_) => {
-                write!(f, "json_object")
+            | ResponseFormat::Json(json) => {
+                write!(f, "{}", json)
             },
         }
     }
@@ -93,14 +94,7 @@ impl Default for TextResponseFormat {
     }
 }
 
-impl Display for TextResponseFormat {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "text")
-    }
-}
+impl_display_for_serialize!(TextResponseFormat);
 
 impl TextResponseFormat {
     pub fn new() -> Self {
@@ -124,14 +118,7 @@ impl Default for JsonResponseFormat {
     }
 }
 
-impl Display for JsonResponseFormat {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "json_object")
-    }
-}
+impl_display_for_serialize!(JsonResponseFormat);
 
 impl JsonResponseFormat {
     pub fn new() -> Self {

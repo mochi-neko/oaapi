@@ -1,38 +1,18 @@
+use crate::macros::impl_display_for_serialize;
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 /// Log probability information for the choice.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Logprobs {
     /// A list of message content tokens with log probability information.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<Vec<LogprobsContent>>,
 }
 
-impl Default for Logprobs {
-    fn default() -> Self {
-        Self {
-            content: None,
-        }
-    }
-}
-
-impl Display for Logprobs {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        if let Some(content) = &self.content {
-            for logprobs_content in content {
-                write!(f, "content: {}", logprobs_content)?;
-            }
-        }
-        Ok(())
-    }
-}
+impl_display_for_serialize!(Logprobs);
 
 /// The content of logprobs.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct LogprobsContent {
     /// The token.
     pub token: String,
@@ -48,40 +28,10 @@ pub struct LogprobsContent {
     pub top_logprobs: Vec<TopLogprobsContent>,
 }
 
-impl Default for LogprobsContent {
-    fn default() -> Self {
-        Self {
-            token: "".to_string(),
-            logprob: 0.0,
-            bytes: None,
-            top_logprobs: vec![],
-        }
-    }
-}
-
-impl Display for LogprobsContent {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "token: {}", self.token)?;
-        write!(f, "logprob: {}", self.logprob)?;
-        if let Some(bytes) = &self.bytes {
-            write!(f, "bytes: {:?}", bytes)?;
-        }
-        for top_logprobs_content in &self.top_logprobs {
-            write!(
-                f,
-                "top_logprobs: {}",
-                top_logprobs_content
-            )?;
-        }
-        Ok(())
-    }
-}
+impl_display_for_serialize!(LogprobsContent);
 
 /// The top logprobs content.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct TopLogprobsContent {
     /// The token.
     pub token: String,
@@ -94,26 +44,4 @@ pub struct TopLogprobsContent {
     pub bytes: Option<Vec<u8>>,
 }
 
-impl Default for TopLogprobsContent {
-    fn default() -> Self {
-        Self {
-            token: "".to_string(),
-            logprob: 0.0,
-            bytes: None,
-        }
-    }
-}
-
-impl Display for TopLogprobsContent {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "token: {}", self.token)?;
-        write!(f, "logprob: {}", self.logprob)?;
-        if let Some(bytes) = &self.bytes {
-            write!(f, "bytes: {:?}", bytes)?;
-        }
-        Ok(())
-    }
-}
+impl_display_for_serialize!(TopLogprobsContent);

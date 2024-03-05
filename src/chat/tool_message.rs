@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::chat::Role;
+use crate::macros::impl_display_for_serialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ToolMessage {
     /// The role of the messages author, in this case tool.
     pub content: String,
@@ -11,6 +12,18 @@ pub struct ToolMessage {
     /// Tool call that this message is responding to.
     pub tool_call_id: String,
 }
+
+impl Default for ToolMessage {
+    fn default() -> Self {
+        Self {
+            content: "".to_string(),
+            role: Role::Tool,
+            tool_call_id: "".to_string(),
+        }
+    }
+}
+
+impl_display_for_serialize!(ToolMessage);
 
 impl ToolMessage {
     pub fn new(

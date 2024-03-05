@@ -1,6 +1,5 @@
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 
@@ -11,13 +10,14 @@ use crate::audio::SpeechStreamError;
 use crate::audio::SpeechStreamResult;
 use crate::audio::Speed;
 use crate::audio::Voice;
-use crate::Client;
+use crate::macros::impl_display_for_serialize;
 use crate::ApiError;
+use crate::Client;
 
 const DEFAULT_STREAM_BUFFER_SIZE: usize = 16 * 1024;
 
 /// The request body for the /audio/speech endpoint.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpeechRequestBody {
     /// One of the available TTS models: tts-1 or tts-1-hd
     pub model: SpeechModel,
@@ -31,41 +31,7 @@ pub struct SpeechRequestBody {
     pub speed: Option<Speed>,
 }
 
-impl Default for SpeechRequestBody {
-    fn default() -> Self {
-        Self {
-            model: SpeechModel::default(),
-            input: SpeechInput::default(),
-            voice: Voice::default(),
-            response_format: None,
-            speed: None,
-        }
-    }
-}
-
-impl Display for SpeechRequestBody {
-    fn fmt(
-        &self,
-        f: &mut std::fmt::Formatter<'_>,
-    ) -> std::fmt::Result {
-        write!(f, "model: {}", self.model)?;
-        write!(f, "input: {}", self.input)?;
-        write!(f, "voice: {}", self.voice)?;
-
-        if let Some(response_format) = self.response_format {
-            write!(
-                f,
-                "response_format: {}",
-                response_format
-            )?;
-        }
-        if let Some(speed) = self.speed {
-            write!(f, "speed: {}", speed)?;
-        }
-
-        Ok(())
-    }
-}
+impl_display_for_serialize!(SpeechRequestBody);
 
 pub(crate) async fn speech(
     client: &Client,

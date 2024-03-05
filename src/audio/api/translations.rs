@@ -22,7 +22,7 @@ use crate::Prompt;
 use crate::Temperature;
 
 /// The response from the /audio/translations endpoint.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct TranslationsRequestBody {
     /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
     pub file: File,
@@ -37,30 +37,19 @@ pub struct TranslationsRequestBody {
     pub temperature: Option<Temperature>,
 }
 
-impl Default for TranslationsRequestBody {
-    fn default() -> Self {
-        Self {
-            file: File::default(),
-            model: AudioModel::default(),
-            prompt: None,
-            temperature: None,
-        }
-    }
-}
-
 impl Display for TranslationsRequestBody {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
         write!(f, "file: {}", self.file)?;
-        write!(f, "model: {}", self.model)?;
+        write!(f, ", model: {}", self.model)?;
 
         if let Some(prompt) = self.prompt.clone() {
-            write!(f, "prompt: {}", prompt)?;
+            write!(f, ", prompt: {}", prompt)?;
         }
         if let Some(temperature) = self.temperature {
-            write!(f, "temperature: {}", temperature)?;
+            write!(f, ", temperature: {}", temperature)?;
         }
 
         Ok(())
