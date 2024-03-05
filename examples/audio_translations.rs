@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
         .audio_translate_into_json(request_body)
         .await?;
 
-    println!("Result: {}", response.text);
+    println!("Result:\n{}", response.text);
 
     Ok(())
 }

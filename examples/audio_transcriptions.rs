@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
         .audio_transcribe_into_plain_text(request_body)
         .await?;
 
-    println!("Result: {}", response);
+    println!("Result:\n{}", response);
 
     Ok(())
 }

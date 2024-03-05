@@ -51,7 +51,7 @@ pub enum TextFormatError {
 pub(crate) type TextFormatResult<T> = std::result::Result<T, TextFormatError>;
 
 /// The JSON response.
-#[derive(serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct JsonResponse {
     /// The text of the transcription or translation.
     pub text: String,
@@ -68,7 +68,10 @@ impl Display for JsonResponse {
         &self,
         f: &mut Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "{}", self.text)
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|_error| std::fmt::Error)?;
+
+        write!(f, "{}", json)
     }
 }
 
@@ -108,7 +111,10 @@ pub struct VerboseJsonResponse {
     pub language: String,
     pub duration: f32,
     pub text: String,
-    pub segments: Vec<VerboseJsonResponseSegment>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub segments: Option<Vec<VerboseJsonResponseSegment>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub words: Option<Vec<VerboseJsonResponseWord>>,
 }
 
 impl Display for VerboseJsonResponse {
@@ -116,19 +122,14 @@ impl Display for VerboseJsonResponse {
         &self,
         f: &mut Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "task: {}", self.task)?;
-        write!(f, "language: {}", self.language)?;
-        write!(f, "duration: {}", self.duration)?;
-        write!(f, "text: {}", self.text)?;
-        write!(f, "segments: [",)?;
-        for segment in self.segments.iter() {
-            write!(f, "{}", segment)?;
-        }
-        write!(f, "]")
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|_error| std::fmt::Error)?;
+
+        write!(f, "{}", json)
     }
 }
 
-/// The segment of a verbose JSON response.
+/// The segment of a verbose JSON response for segment level timestamp.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct VerboseJsonResponseSegment {
     pub id: u32,
@@ -148,28 +149,30 @@ impl Display for VerboseJsonResponseSegment {
         &self,
         f: &mut Formatter<'_>,
     ) -> std::fmt::Result {
-        write!(f, "id: {}", self.id)?;
-        write!(f, "seek: {}", self.seek)?;
-        write!(f, "start: {}", self.start)?;
-        write!(f, "end: {}", self.end)?;
-        write!(f, "text: {}", self.text)?;
-        write!(f, "tokens: [",)?;
-        for token in self.tokens.iter() {
-            write!(f, "{}", token)?;
-        }
-        write!(f, "]")?;
-        write!(f, "temperature: {}", self.temperature)?;
-        write!(f, "avg_logprob: {}", self.avg_logprob)?;
-        write!(
-            f,
-            "compression_ratio: {}",
-            self.compression_ratio
-        )?;
-        write!(
-            f,
-            "no_speech_prob: {}",
-            self.no_speech_prob
-        )
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|_error| std::fmt::Error)?;
+
+        write!(f, "{}", json)
+    }
+}
+
+/// The word of a verbose JSON response for word level timestamp.
+#[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]
+pub struct VerboseJsonResponseWord {
+    pub word: String,
+    pub start: f32,
+    pub end: f32,
+}
+
+impl Display for VerboseJsonResponseWord {
+    fn fmt(
+        &self,
+        f: &mut Formatter<'_>,
+    ) -> std::fmt::Result {
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|_error| std::fmt::Error)?;
+
+        write!(f, "{}", json)
     }
 }
 

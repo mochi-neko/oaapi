@@ -29,10 +29,10 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let response = client
-        .transcribe_into_json(request_body)
+        .audio_transcribe_into_json(request_body)
         .await?;
 
-    println!("Result: {}", response.text);
+    println!("Result:\n{}", response);
 
     Ok(())
 }
