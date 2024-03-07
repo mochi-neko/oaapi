@@ -194,7 +194,7 @@ impl ImageUrl {
     ) -> Self {
         let url = format!(
             "data:image/{};base64,{}",
-            format.format(),
+            format.to_string(),
             base64
         );
 

@@ -1,7 +1,7 @@
 //! Completes chat streaming by /chat/completions endpoint with stream response.
 //!
 //! ```shell
-//! $ cargo run --example chat_completions_stream -- --prompt <prompt> --message <message>
+//! $ cargo run --example chat_completions_stream --features chat -- --prompt <prompt> --message <message>
 //! ```
 
 use std::sync::atomic::{AtomicBool, Ordering};

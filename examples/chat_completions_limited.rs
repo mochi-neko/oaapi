@@ -1,7 +1,7 @@
 //! Completes chat by /chat/completions endpoint with limited tokens and stop sequences.
 //!
 //! ```shell
-//! $ cargo run --example chat_completions_limited -- --prompt <prompt> --message <message> --max-tokens <max-tokens>
+//! $ cargo run --example chat_completions_limited --features chat -- --prompt <prompt> --message <message> --max-tokens <max-tokens>
 //! ```
 
 use clap::Parser;

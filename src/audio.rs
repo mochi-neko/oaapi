@@ -1,3 +1,20 @@
+//! The audio API of the OpenAI API.
+//!
+//! ## NOTE
+//! This is only available for `audio` feature flag.
+//!
+//! ## Supported APIs
+//! - [x] [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
+//! - [x] [transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+//! - [x] [translations](https://platform.openai.com/docs/api-reference/audio/createTranslation)
+//!
+//! ## Supported text response formats
+//! - [x] Plain text
+//! - [x] JSON
+//! - [x] Verbose JSON
+//! - [x] SubRip Subtitle
+//! - [x] WebVTT
+
 pub use api::speech::SpeechRequestBody;
 pub use api::transcriptions::TranscriptionsRequestBody;
 pub use api::translations::TranslationsRequestBody;

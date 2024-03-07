@@ -1,7 +1,7 @@
 //! Transcribes audio into a text with timestamp granularities in verbose JSON format of the input language by /audio/transcriptions endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_transcriptions_timestamp_granularities -- --file-path <file-path>
+//! $ cargo run --example audio_transcriptions_timestamp_granularities --features audio -- --file-path <file-path>
 //! ```
 
 use std::path::Path;

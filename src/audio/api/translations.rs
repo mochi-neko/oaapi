@@ -21,7 +21,7 @@ use crate::Client;
 use crate::Prompt;
 use crate::Temperature;
 
-/// The response from the /audio/translations endpoint.
+/// The request boyd for the `/audio/translations` endpoint.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct TranslationsRequestBody {
     /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.

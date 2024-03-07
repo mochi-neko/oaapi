@@ -1,7 +1,7 @@
 //! Completes chat by /chat/completions endpoint with vision input.
 //!
 //! ```shell
-//! $ cargo run --example chat_completions_vision -- --prompt <prompt> --message <message> --image-file <image-file>
+//! $ cargo run --example chat_completions_vision --features chat -- --prompt <prompt> --message <message> --image-file <image-file>
 //! ```
 
 use base64::Engine;

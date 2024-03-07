@@ -1,7 +1,7 @@
 //! Translates audio into a text of English by /audio/translations endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_translations -- --file-path <file-path>
+//! $ cargo run --example audio_translations --features audio -- --file-path <file-path>
 //! ```
 
 use std::path::Path;

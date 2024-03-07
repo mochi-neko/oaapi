@@ -1,7 +1,7 @@
 //! Transcribes audio into a text of the input language by /audio/transcriptions endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_transcriptions -- --file-path <file-path>
+//! $ cargo run --example audio_transcriptions  --features audio -- --file-path <file-path>
 //! ```
 
 use std::path::Path;

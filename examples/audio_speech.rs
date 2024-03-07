@@ -1,7 +1,7 @@
 //! Speech a text by /audio/speech endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_speech -- --text <text> --voice <voice> --output <path/to/output>
+//! $ cargo run --example audio_speech --features audio -- --text <text> --voice <voice> --output <path/to/output>
 //! ```
 
 use std::sync::atomic::{AtomicBool, Ordering};

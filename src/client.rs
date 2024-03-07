@@ -1,7 +1,13 @@
+//! The client of the OpenAI API.
+//!
+//!
+
+#[cfg(feature = "audio")]
 use crate::audio::{
     AudioApiResult, JsonResponse, SpeechRequestBody, SpeechStreamResult,
     TranscriptionsRequestBody, TranslationsRequestBody, VerboseJsonResponse,
 };
+#[cfg(feature = "chat")]
 use crate::chat::{
     ChatApiResult, ChatCompletionObject, ChatStreamResult,
     CompletionsRequestBody,
@@ -12,8 +18,11 @@ use crate::OrganizationId;
 
 use std::env::VarError;
 
+#[cfg(feature = "audio")]
 use subtp::srt::SubRip;
+#[cfg(feature = "audio")]
 use subtp::vtt::WebVtt;
+
 use tokio::sync::mpsc::Receiver;
 use tokio::task::JoinHandle;
 
@@ -91,7 +100,7 @@ impl Client {
         if let Some(organization_id) = self.organization_id.clone() {
             builder = builder.header(
                 "OpenAI-Organization",
-                organization_id.organization_header(),
+                organization_id.value,
             );
         }
 
@@ -100,6 +109,7 @@ impl Client {
 }
 
 // Audio APIs
+#[cfg(feature = "audio")]
 impl Client {
     /// Speeches the given text.
     ///
@@ -509,6 +519,7 @@ impl Client {
 }
 
 // Chat APIs
+#[cfg(feature = "chat")]
 impl Client {
     /// Completes the given chat.
     ///

@@ -16,7 +16,7 @@ use crate::Client;
 
 const DEFAULT_STREAM_BUFFER_SIZE: usize = 16 * 1024;
 
-/// The request body for the /audio/speech endpoint.
+/// The request body for the `/audio/speech` endpoint.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpeechRequestBody {
     /// One of the available TTS models: tts-1 or tts-1-hd

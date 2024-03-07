@@ -1,7 +1,7 @@
 //! Transcribes audio into a text with verbose JSON format of the input language by /audio/transcriptions endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_transcriptions_verbose_json -- --file-path <file-path>
+//! $ cargo run --example audio_transcriptions_verbose_json --features audio -- --file-path <file-path>
 //! ```
 
 use std::path::Path;

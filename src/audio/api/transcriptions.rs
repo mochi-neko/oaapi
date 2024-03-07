@@ -1,5 +1,4 @@
 use reqwest::multipart::Form;
-use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display};
 use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
@@ -24,7 +23,7 @@ use crate::Client;
 use crate::Prompt;
 use crate::Temperature;
 
-/// The response from the /audio/transcriptions endpoint.
+/// The request body for the `/audio/transcriptions` endpoint.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct TranscriptionsRequestBody {
     /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.

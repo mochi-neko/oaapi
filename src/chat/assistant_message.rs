@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 use crate::chat::Role;
 use crate::chat::ToolType;

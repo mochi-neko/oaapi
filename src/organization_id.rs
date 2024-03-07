@@ -3,7 +3,7 @@ use std::env::VarError;
 /// The organization ID of the OpenAI API.
 #[derive(Clone, PartialEq, Eq)]
 pub struct OrganizationId {
-    value: String,
+    pub(crate) value: String,
 }
 
 impl OrganizationId {
@@ -24,10 +24,5 @@ impl OrganizationId {
         Ok(Self {
             value: key,
         })
-    }
-
-    /// Returns the HTTP header value.
-    pub(crate) fn organization_header(&self) -> String {
-        self.value.clone()
     }
 }

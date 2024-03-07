@@ -1,7 +1,7 @@
 //! Completes chat by /chat/completions endpoint.
 //!
 //! ```shell
-//! $ cargo run --example chat_completions -- --prompt <prompt> --message <message>
+//! $ cargo run --example chat_completions --features chat -- --prompt <prompt> --message <message>
 //! ```
 
 use clap::Parser;
