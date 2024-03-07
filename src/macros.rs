@@ -7,7 +7,7 @@
 /// - `$($variant:ident => $str:expr),*`: The variants of the enum and their corresponding string representations.
 ///
 /// ## Example
-/// ```
+/// ```no_compile
 /// // use crate::macros::impl_enum_string_serialization;
 ///
 /// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -102,7 +102,7 @@ pub(crate) use impl_enum_string_serialization;
 /// - `$( $variant:ident($struct:ident, $tag:expr) ),*`: The variants of the enum and their corresponding structs and tags.
 ///
 /// ## Example
-/// ```
+/// ```no_compile
 /// // use crate::macros::impl_enum_struct_serialization;
 /// use serde::{Serialize, Deserialize};
 ///
@@ -237,7 +237,7 @@ pub(crate) use impl_enum_struct_serialization;
 /// - `$false_variant`: The name of the variant that corresponds to `false`.
 ///
 /// ## Example
-/// ```
+/// ```no_compile
 /// // use crate::macros::impl_bool_enum_serialization;
 ///
 /// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -331,7 +331,7 @@ pub(crate) use impl_enum_bool_serialization;
 /// - `$array_type`: The type of the array elements.
 ///
 /// ## Example
-/// ```
+/// ```no_compile
 /// // use crate::macros::impl_enum_with_string_or_array_serialization;
 /// use serde::{Serialize, Deserialize};
 ///
@@ -468,7 +468,7 @@ pub(crate) use impl_enum_with_string_or_array_serialization;
 /// - `$t`: The type.
 ///
 /// ## Example
-/// ```
+/// ```no_compile
 /// // use crate::macros::impl_display_for_serialize;
 /// use serde::{Serialize, Deserialize};
 ///

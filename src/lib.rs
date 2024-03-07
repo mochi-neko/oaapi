@@ -33,7 +33,7 @@
 //! ## Example
 //! An example to call the chat completions API with `chat` feature is as follows:
 //!
-//! ```
+//! ```no_run
 //! use oaapi::Client;
 //! use oaapi::chat::CompletionsRequestBody;
 //! use oaapi::chat::SystemMessage;
@@ -48,7 +48,7 @@
 //!     // 2. Create a request body parameters.
 //!     let request_body = CompletionsRequestBody {
 //!         messages: vec![
-//!             SystemMessage::new("Prompt.".into(), None).into(),
+//!             SystemMessage::new("Prompt.", None).into(),
 //!             UserMessage::new("Chat message from user.".into(), None).into(),
 //!         ],
 //!         model: ChatModel::Gpt35Turbo,

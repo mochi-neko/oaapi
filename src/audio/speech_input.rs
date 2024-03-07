@@ -27,6 +27,14 @@ impl Display for SpeechInput {
     }
 }
 
+impl From<&str> for SpeechInput {
+    fn from(value: &str) -> Self {
+        Self {
+            value: value.to_string(),
+        }
+    }
+}
+
 impl SpeechInput {
     pub fn new<S>(value: S) -> ValidationResult<Self, usize>
     where

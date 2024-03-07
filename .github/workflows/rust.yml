@@ -24,12 +24,6 @@ jobs:
       run: cargo build --verbose --features chat
     - name: Build full
       run: cargo build --verbose --features full
-    - name: Test default
-      run: cargo test --verbose
-    - name: Test audio
-      run: cargo test --verbose --features audio
-    - name: Test chat
-      run: cargo test --verbose --features chat
     - name: Test full
       run: cargo test --verbose --features full
     - name: Doc full

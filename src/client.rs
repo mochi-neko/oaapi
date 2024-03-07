@@ -69,7 +69,7 @@ impl Client {
     /// Creates a new client with the API key loaded from the environment variable: `OPENAI_API_KEY`.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     ///
     /// let client = Client::from_env().unwrap();
@@ -118,7 +118,7 @@ impl Client {
     /// - The handle of the stream.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::SpeechRequestBody;
     /// use oaapi::audio::Voice;
@@ -159,7 +159,7 @@ impl Client {
     /// - `request_body` - The request body of the transcriptions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranscriptionsRequestBody;
     /// use oaapi::audio::File;
@@ -195,7 +195,7 @@ impl Client {
     /// - `request_body` - The request body of the transcriptions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranscriptionsRequestBody;
     /// use oaapi::audio::File;
@@ -231,7 +231,7 @@ impl Client {
     /// - `request_body` - The request body of the transcriptions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranscriptionsRequestBody;
     /// use oaapi::audio::File;
@@ -267,7 +267,7 @@ impl Client {
     /// - `request_body` - The request body of the transcriptions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranscriptionsRequestBody;
     /// use oaapi::audio::File;
@@ -303,7 +303,7 @@ impl Client {
     /// - `request_body` - The request body of the transcriptions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranscriptionsRequestBody;
     /// use oaapi::audio::File;
@@ -339,7 +339,7 @@ impl Client {
     /// - `request_body` - The request body of the translations.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranslationsRequestBody;
     /// use oaapi::audio::File;
@@ -375,7 +375,7 @@ impl Client {
     /// - `request_body` - The request body of the translations.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranslationsRequestBody;
     /// use oaapi::audio::File;
@@ -411,7 +411,7 @@ impl Client {
     /// - `request_body` - The request body of the translations.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranslationsRequestBody;
     /// use oaapi::audio::File;
@@ -447,7 +447,7 @@ impl Client {
     /// - `request_body` - The request body of the translations.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranslationsRequestBody;
     /// use oaapi::audio::File;
@@ -483,7 +483,7 @@ impl Client {
     /// - `request_body` - The request body of the translations.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::audio::TranslationsRequestBody;
     /// use oaapi::audio::File;
@@ -523,7 +523,7 @@ impl Client {
     /// - `request_body` - The request body of the completions.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::chat::CompletionsRequestBody;
     /// use oaapi::chat::SystemMessage;
@@ -535,7 +535,7 @@ impl Client {
     ///     let client = Client::from_env()?;
     ///     let request_body = CompletionsRequestBody {
     ///         messages: vec![
-    ///             SystemMessage::new("Prompt.".into(), None).into(),
+    ///             SystemMessage::new("Prompt.", None).into(),
     ///             UserMessage::new("Chat message from user.".into(), None).into(),
     ///         ],
     ///         model: ChatModel::Gpt35Turbo,
@@ -567,7 +567,7 @@ impl Client {
     /// - The handle of the stream.
     ///
     /// ## Example
-    /// ```
+    /// ```no_run
     /// use oaapi::Client;
     /// use oaapi::chat::CompletionsRequestBody;
     /// use oaapi::chat::SystemMessage;
@@ -580,7 +580,7 @@ impl Client {
     ///     let client = Client::from_env()?;
     ///     let request_body = CompletionsRequestBody {
     ///         messages: vec![
-    ///             SystemMessage::new("Prompt.".into(), None).into(),
+    ///             SystemMessage::new("Prompt.", None).into(),
     ///             UserMessage::new("Chat message from user.".into(), None).into(),
     ///         ],
     ///         model: ChatModel::Gpt35Turbo,

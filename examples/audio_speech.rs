@@ -4,6 +4,7 @@
 //! $ cargo run --example audio_speech --features audio -- --text <text> --voice <voice> --output <path/to/output>
 //! ```
 
+use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -13,6 +14,7 @@ use tokio::io::AsyncWriteExt;
 use oaapi::audio::SpeechInput;
 use oaapi::audio::SpeechRequestBody;
 use oaapi::audio::SpeechResponseFormat;
+use oaapi::audio::Voice;
 use oaapi::Client;
 
 #[derive(Parser)]
@@ -32,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
 
     let request_body = SpeechRequestBody {
         input: SpeechInput::new(arguments.text)?,
-        voice: arguments.voice.try_into()?,
+        voice: Voice::from_str(&arguments.voice)?,
         response_format: Some(SpeechResponseFormat::Mp3),
         ..Default::default()
     };

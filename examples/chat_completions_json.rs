@@ -10,7 +10,7 @@ use std::fmt::Display;
 
 use oaapi::chat::ChatModel;
 use oaapi::chat::CompletionsRequestBody;
-use oaapi::chat::JsonResponseFormat;
+use oaapi::chat::ResponseFormatType;
 use oaapi::chat::SystemMessage;
 use oaapi::chat::UserMessage;
 use oaapi::Client;
@@ -78,7 +78,7 @@ async fn main() -> anyhow::Result<()> {
             UserMessage::new(arguments.message.into(), None).into(),
         ],
         model: ChatModel::Gpt35Turbo1106, // Specify JSON response enabled model
-        response_format: Some(JsonResponseFormat::new().into()), // Specify JSON response format
+        response_format: Some(ResponseFormatType::Json.into()), // Specify JSON response format
         ..Default::default()
     };
 

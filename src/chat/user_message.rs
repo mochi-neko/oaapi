@@ -64,6 +64,12 @@ impl Default for MessageContent {
     }
 }
 
+impl From<&str> for MessageContent {
+    fn from(text: &str) -> Self {
+        Self::Text(text.to_string())
+    }
+}
+
 impl_display_for_serialize!(MessageContent);
 
 impl_enum_with_string_or_array_serialization!(
