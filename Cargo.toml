@@ -8,7 +8,7 @@ path = "src/lib.rs"
 
 [features]
 default = []
-audio = []
+audio = ["dep:subtp"]
 chat = []
 full = ["audio", "chat"]
 
@@ -21,9 +21,9 @@ futures-util = "^0.3.*"
 reqwest = { version = "^0.11.*", features = ["multipart", "json", "stream"] }
 serde = { version = "^1.0.*", features = ["derive"] }
 serde_json = "^1.0.*"
-subtp = "^0.2.*"
 thiserror = "^1.0.*"
 tokio = { version = "^1.35.*", features = ["fs"] }
+subtp = { version = "^0.2.*", optional = true }
 
 [dev-dependencies]
 anyhow = "1.0.79"
