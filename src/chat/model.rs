@@ -5,6 +5,8 @@ use std::fmt::Display;
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum ChatModel {
     // GPT-3.5-turbo models
+    /// gpt-3.5-turbo-0125
+    Gpt35Turbo0125,
     /// gpt-3.5-turbo-1106
     Gpt35Turbo1106,
     /// gpt-3.5-turbo-0613
@@ -47,6 +49,9 @@ impl Display for ChatModel {
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
         match self {
+            | ChatModel::Gpt35Turbo0125 => {
+                write!(f, "gpt-3.5-turbo-0125")
+            },
             | ChatModel::Gpt35Turbo1106 => {
                 write!(f, "gpt-3.5-turbo-1106")
             },
@@ -93,6 +98,7 @@ impl Display for ChatModel {
 impl ChatModel {
     pub fn context_window(&self) -> u32 {
         match self {
+            | ChatModel::Gpt35Turbo0125 => 16358,
             | ChatModel::Gpt35Turbo1106 => 16358,
             | ChatModel::Gpt35Turbo0613 => 4096,
             | ChatModel::Gpt35Turbo => 4096,
@@ -112,6 +118,7 @@ impl ChatModel {
 
 impl_enum_string_serialization!(
     ChatModel,
+    Gpt35Turbo0125 => "gpt-3.5-turbo-0125",
     Gpt35Turbo1106 => "gpt-3.5-turbo-1106",
     Gpt35Turbo0613 => "gpt-3.5-turbo-0613",
     Gpt35Turbo => "gpt-3.5-turbo",
@@ -133,6 +140,12 @@ mod test {
 
     #[test]
     fn deserialize_chat_model() {
+        assert_eq!(
+            serde_json::from_str::<ChatModel>("\"gpt-3.5-turbo-0125\"")
+                .unwrap(),
+            ChatModel::Gpt35Turbo0125
+        );
+
         assert_eq!(
             serde_json::from_str::<ChatModel>("\"gpt-3.5-turbo-1106\"")
                 .unwrap(),
@@ -208,6 +221,11 @@ mod test {
 
     #[test]
     fn serialize_chat_model() {
+        assert_eq!(
+            serde_json::to_string(&ChatModel::Gpt35Turbo0125).unwrap(),
+            "\"gpt-3.5-turbo-0125\""
+        );
+
         assert_eq!(
             serde_json::to_string(&ChatModel::Gpt35Turbo1106).unwrap(),
             "\"gpt-3.5-turbo-1106\""
