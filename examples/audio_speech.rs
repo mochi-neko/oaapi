@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut file = tokio::fs::File::create(arguments.output.clone()).await?;
 
-    let handle = tokio::spawn(async move {
+    let receive_handle = tokio::spawn(async move {
         while let Some(chunk) = receiver.recv().await {
             match chunk {
                 | Ok(chunk) => {
@@ -71,6 +71,7 @@ async fn main() -> anyhow::Result<()> {
 
     while running.load(Ordering::SeqCst) {}
 
+    receive_handle.abort();
     handle.abort();
 
     Ok(())
