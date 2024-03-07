@@ -45,6 +45,14 @@ async fn main() -> anyhow::Result<()> {
 
     let mut file = tokio::fs::File::create(arguments.output.clone()).await?;
 
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+    ctrlc::set_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    })?;
+
+    let r = running.clone();
+
     let receive_handle = tokio::spawn(async move {
         while let Some(chunk) = receiver.recv().await {
             match chunk {
@@ -62,14 +70,9 @@ async fn main() -> anyhow::Result<()> {
             "Save the speech to {}",
             arguments.output
         );
-    });
 
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
-
-    ctrlc::set_handler(move || {
         r.store(false, Ordering::SeqCst);
-    })?;
+    });
 
     while running.load(Ordering::SeqCst) {}
 
