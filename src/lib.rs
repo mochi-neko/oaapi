@@ -5,13 +5,25 @@
 //! - [`chat`](`crate::chat`)
 //!
 //! ## Supported APIs
-//! - [x] [audio](https://platform.openai.com/docs/api-reference/audio)
+//! - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
 //!     - [x] [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
 //!     - [x] [transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription)
 //!     - [x] [translations](https://platform.openai.com/docs/api-reference/audio/createTranslation)
-//! - [x] [chat](https://platform.openai.com/docs/api-reference/chat)
+//! - [x] [Chat](https://platform.openai.com/docs/api-reference/chat)
 //!     - [x] [completions](https://platform.openai.com/docs/api-reference/chat/create)
 //!     - [x] [completions streaming](https://platform.openai.com/docs/api-reference/chat/create)
+//! - [ ] [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
+//! - [ ] [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning)
+//! - [ ] [Files](https://platform.openai.com/docs/api-reference/files)
+//! - [ ] [Images](https://platform.openai.com/docs/api-reference/images)
+//! - [ ] [Models](https://platform.openai.com/docs/api-reference/models)
+//! - [ ] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
+//!
+//! Beta version APIs:
+//! - [ ] [Assistants](https://platform.openai.com/docs/api-reference/assistants)
+//! - [ ] [Threads](https://platform.openai.com/docs/api-reference/threads)
+//! - [ ] [Messages](https://platform.openai.com/docs/api-reference/messages)
+//! - [ ] [Runs](https://platform.openai.com/docs/api-reference/runs)
 //!
 //! ## Usage
 //! 1. Enable API feature flags that you want to use, e.g. `chat`.

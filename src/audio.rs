@@ -4,9 +4,9 @@
 //! This is only available for `audio` feature flag.
 //!
 //! ## Supported APIs
-//! - [x] [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
-//! - [x] [transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription)
-//! - [x] [translations](https://platform.openai.com/docs/api-reference/audio/createTranslation)
+//! - [x] [Speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
+//! - [x] [Transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+//! - [x] [Translations](https://platform.openai.com/docs/api-reference/audio/createTranslation)
 //!
 //! ## Supported text response formats
 //! - [x] Plain text

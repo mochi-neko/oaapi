@@ -4,8 +4,8 @@
 //! This is only available for `chat` feature flag.
 //!
 //! ## Supported APIs
-//! - [x] [completions](https://platform.openai.com/docs/api-reference/chat/create)
-//! - [x] [completions streaming](https://platform.openai.com/docs/api-reference/chat/create)
+//! - [x] [Completions](https://platform.openai.com/docs/api-reference/chat/create)
+//! - [x] [Completions streaming](https://platform.openai.com/docs/api-reference/chat/create)
 
 pub use api::completions::CompletionsRequestBody;
 pub use assistant_message::AssistantMessage;
