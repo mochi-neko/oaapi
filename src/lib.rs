@@ -4,6 +4,9 @@
 //! - [`audio`](`crate::audio`)
 //! - [`chat`](`crate::chat`)
 //!
+//! > [!NOTE]
+//! > You need to enable the feature flags to use the corresponding APIs.
+//!
 //! ## Supported APIs
 //! - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
 //!     - [x] [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
