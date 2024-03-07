@@ -40,6 +40,7 @@
 /// let deserialized: TestEnum = serde_json::from_str(&serialized).unwrap();
 /// assert_eq!(deserialized, test);
 /// ```
+#[allow(dead_code)]
 macro_rules! impl_enum_string_serialization {
     ($enum_name:ident, $($variant:ident => $str:expr),*) => {
         impl serde::Serialize for $enum_name {
@@ -91,6 +92,7 @@ macro_rules! impl_enum_string_serialization {
     };
 }
 
+#[allow(unused)]
 pub(crate) use impl_enum_string_serialization;
 
 /// Implements [`serde::Serialize`], [`serde::Deserialize`] and [`From`]
@@ -181,6 +183,7 @@ pub(crate) use impl_enum_string_serialization;
 /// let deserialized: TestEnum = serde_json::from_str(&serialized).unwrap();
 /// assert_eq!(deserialized, test);
 /// ```
+#[allow(dead_code)]
 macro_rules! impl_enum_struct_serialization {
     ($enum_name:ident, $tag_field:ident, $( $variant:ident($struct:ident, $tag:expr) ),* ) => {
         impl serde::Serialize for $enum_name {
@@ -227,6 +230,7 @@ macro_rules! impl_enum_struct_serialization {
     };
 }
 
+#[allow(unused)]
 pub(crate) use impl_enum_struct_serialization;
 
 /// Implements [`serde::Serialize`] and [`serde::Deserialize`] for an enum with corresponding boolean variants.
@@ -260,6 +264,7 @@ pub(crate) use impl_enum_struct_serialization;
 /// let deserialized: TestEnum = serde_json::from_str(&serialized).unwrap();
 /// assert_eq!(deserialized, TestEnum::B);
 /// ```
+#[allow(dead_code)]
 macro_rules! impl_enum_bool_serialization {
     ($enum_name:ident, $true_variant:ident, $false_variant:ident) => {
         impl serde::Serialize for $enum_name {
@@ -319,6 +324,7 @@ macro_rules! impl_enum_bool_serialization {
     };
 }
 
+#[allow(unused)]
 pub(crate) use impl_enum_bool_serialization;
 
 /// Implements [`serde::Serialize`], [`serde::Deserialize`] and [`From`] for an enum with corresponding string or array of any struct variants.
@@ -368,6 +374,7 @@ pub(crate) use impl_enum_bool_serialization;
 ///     TestEnum::Array(vec![TestStruct { value: 42 }])
 /// );
 /// ```
+#[allow(dead_code)]
 macro_rules! impl_enum_with_string_or_array_serialization {
     ($enum_name:ident, $single_variant:ident($single_type:ty), $array_variant:ident($array_type:ty)) => {
         impl serde::Serialize for $enum_name {
@@ -460,6 +467,7 @@ macro_rules! impl_enum_with_string_or_array_serialization {
     };
 }
 
+#[allow(unused)]
 pub(crate) use impl_enum_with_string_or_array_serialization;
 
 /// Implements [`std::fmt::Display`] for a type that can be serialized.
@@ -482,6 +490,7 @@ pub(crate) use impl_enum_with_string_or_array_serialization;
 /// let test = TestStruct { value: 42 };
 /// assert_eq!(test.to_string(), "{\n  \"value\": 42\n}");
 /// ```
+#[allow(dead_code)]
 macro_rules! impl_display_for_serialize {
     ($t:ty) => {
         impl std::fmt::Display for $t {
@@ -497,6 +506,7 @@ macro_rules! impl_display_for_serialize {
     };
 }
 
+#[allow(unused)]
 pub(crate) use impl_display_for_serialize;
 
 #[cfg(test)]

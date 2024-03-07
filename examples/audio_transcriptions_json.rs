@@ -1,7 +1,7 @@
 //! Transcribes audio into a text with JSON format of the input language by /audio/transcriptions endpoint.
 //!
 //! ```shell
-//! $ cargo run --example audio_transcriptions_json  --features audio -- --file-path <file-path>
+//! $ cargo run --example audio_transcriptions_json --features audio -- --file-path <file-path>
 //! ```
 
 use clap::Parser;

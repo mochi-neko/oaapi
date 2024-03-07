@@ -26,8 +26,10 @@ pub struct SpeechRequestBody {
     /// The voice to use when generating the audio. Supported voices are alloy, echo, fable, onyx, nova, and shimmer.
     pub voice: Voice,
     /// The format to audio in. Supported formats are mp3, opus, aac, and flac.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<SpeechResponseFormat>,
     /// The speed of the generated audio. Select a value from 0.25 to 4.0. 1.0 is the default.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub speed: Option<Speed>,
 }
 

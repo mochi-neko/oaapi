@@ -17,6 +17,7 @@ impl<S> StreamLineReader<S>
 where
     S: Stream<Item = Result<bytes::Bytes, reqwest::Error>>,
 {
+    #[allow(dead_code)]
     pub fn new(stream: S) -> Self {
         StreamLineReader {
             stream,
