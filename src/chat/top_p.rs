@@ -5,7 +5,7 @@ use std::fmt::Display;
 /// Top_p of generation.
 ///
 /// ## Range
-/// The top_p must be between 0.0 and 1.0.
+/// `[0.0, 1.0]`
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct TopP {

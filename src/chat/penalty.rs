@@ -5,7 +5,7 @@ use std::fmt::Display;
 /// Penalty.
 ///
 /// ## Range
-/// The penalty must be between -2.0 and 2.0.
+/// `[-2.0, 2.0]`
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Penalty {

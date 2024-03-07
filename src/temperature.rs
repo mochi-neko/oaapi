@@ -5,7 +5,7 @@ use std::fmt::Display;
 /// Temperature for generations.
 ///
 /// ## Range
-/// The temperature must be between 0.0 and 1.0.
+/// `[0.0, 1.0]`
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Temperature {

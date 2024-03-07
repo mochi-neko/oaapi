@@ -3,6 +3,9 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 
 /// The speed to speech.
+/// 
+/// ## Range
+/// `[0.25, 4.0]`
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Speed {

@@ -6,7 +6,7 @@ use std::fmt::Display;
 /// Max tokens count.
 ///
 /// ## Range
-/// The max tokens count must be between 1 and context window for each model.
+/// `[1, context_window_for_each_model]`
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct MaxTokens {

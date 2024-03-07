@@ -5,7 +5,7 @@ use std::fmt::Display;
 /// Bias.
 ///
 /// ## Range
-/// The value must be between -100.0 and 100.0.
+/// `[-100.0, 100.0]`
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Bias {

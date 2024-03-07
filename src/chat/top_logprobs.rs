@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 /// Top logprobs.
 ///
 /// ## Range
-/// The penalty must be between 0 and 5.
+/// `[0, 5]`
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct TopLogprobs {
