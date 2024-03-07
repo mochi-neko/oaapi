@@ -9,7 +9,7 @@ use crate::macros::{
 };
 use crate::{ValidationError, ValidationResult};
 
-/// A user message.
+/// The user message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct UserMessage {
     /// The contents of the user message.

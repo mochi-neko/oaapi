@@ -4,7 +4,7 @@ use crate::chat::Role;
 use crate::chat::ToolType;
 use crate::macros::impl_display_for_serialize;
 
-/// An assistant message.
+/// The assistant message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct AssistantMessage {
     /// The contents of the assistant message.

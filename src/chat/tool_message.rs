@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::chat::Role;
 use crate::macros::impl_display_for_serialize;
 
+/// The tool message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ToolMessage {
     /// The role of the messages author, in this case tool.

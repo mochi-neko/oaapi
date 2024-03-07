@@ -4,7 +4,7 @@ use crate::chat::Role;
 use crate::macros::impl_display_for_serialize;
 use crate::Prompt;
 
-/// A system message.
+/// The system message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct SystemMessage {
     /// The contents of the system message.
