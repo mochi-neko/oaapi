@@ -1,5 +1,5 @@
 # oaapi
-An unofficial Rust client for OpenAI API.
+An unofficial Rust client for [the OpenAI API](https://platform.openai.com/docs/api-reference).
 
 ## Installation
 Run the following Cargo command in your project directory:
