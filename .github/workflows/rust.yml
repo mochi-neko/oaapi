@@ -1,0 +1,36 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build default
+      run: cargo build --verbose
+    - name: Build audio
+      run: cargo build --verbose --features audio
+    - name: Build chat
+      run: cargo build --verbose --features chat
+    - name: Build full
+      run: cargo build --verbose --features full
+    - name: Test default
+      run: cargo test --verbose
+    - name: Test audio
+      run: cargo test --verbose --features audio
+    - name: Test chat
+      run: cargo test --verbose --features chat
+    - name: Test full
+      run: cargo test --verbose --features full
+    - name: Doc full
+      run: cargo doc --verbose --features full
