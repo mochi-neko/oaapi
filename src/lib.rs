@@ -13,10 +13,44 @@
 //!     - [x] [completions](https://platform.openai.com/docs/api-reference/chat/create)
 //!     - [x] [completions streaming](https://platform.openai.com/docs/api-reference/chat/create)
 //!
-//! ## Usages
+//! ## Usage
 //! 1. Enable API feature flags that you want to use, e.g. `chat`.
 //! 2. Create a [`crate::Client`] with the API key and the other optional settings.
 //! 3. Use the client to call the APIs, e.g. [`crate::Client::chat_complete`].
+//!
+//! ## Example
+//! An example to call the chat completions API with `chat` feature is as follows:
+//!
+//! ```
+//! use oaapi::Client;
+//! use oaapi::chat::CompletionsRequestBody;
+//! use oaapi::chat::SystemMessage;
+//! use oaapi::chat::UserMessage;
+//! use oaapi::chat::ChatModel;
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     // 1. Create a client, e.g. with API key loaded from the environment variable: `OPENAI_API_KEY`.
+//!     let client = Client::from_env()?;
+//!
+//!     // 2. Create a request body parameters.
+//!     let request_body = CompletionsRequestBody {
+//!         messages: vec![
+//!             SystemMessage::new("Prompt.".into(), None).into(),
+//!             UserMessage::new("Chat message from user.".into(), None).into(),
+//!         ],
+//!         model: ChatModel::Gpt35Turbo,
+//!         ..Default::default()
+//!     };
+//!
+//!     // 3. Call the API.
+//!     let response = client
+//!         .chat_complete(request_body)
+//!         .await?;
+//!
+//!     Ok(())
+//! }
+//! ```
 
 pub use crate::api_key::ApiKey;
 pub use crate::client::Client;

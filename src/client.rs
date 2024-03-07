@@ -1,7 +1,3 @@
-//! The client of the OpenAI API.
-//!
-//!
-
 #[cfg(feature = "audio")]
 use crate::audio::{
     AudioApiResult, JsonResponse, SpeechRequestBody, SpeechStreamResult,
