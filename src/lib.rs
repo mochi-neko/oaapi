@@ -34,7 +34,13 @@
 //! 3. Use the client to call the APIs, e.g. [`crate::Client::chat_complete`].
 //!
 //! ## Example
-//! An example to call the chat completions API with `chat` feature is as follows:
+//! An example to call the chat completions API with `chat` feature and setting the API key to the environment variable `OPENAI_API_KEY`:
+//!
+//! ```env
+//! OPENAI_API_KEY=your-openai-api-key
+//! ```
+//!
+//! is as follows:
 //!
 //! ```no_run
 //! use oaapi::Client;
