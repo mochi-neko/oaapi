@@ -44,7 +44,7 @@
 //! and setting the API key to the environment variable `OPENAI_API_KEY`:
 //!
 //! ```env
-//! OPENAI_API_KEY=your-openai-api-key
+//! OPENAI_API_KEY={your-openai-api-key}
 //! ```
 //!
 //! is as follows:
