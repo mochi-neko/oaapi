@@ -49,7 +49,14 @@ Beta version APIs:
 3. Use the client to call the APIs, e.g. [`crate::Client::chat_complete`].
 
 ## Example
-An example to call the chat completions API with `chat` feature and setting the API key to the environment variable `OPENAI_API_KEY`:
+An example to call the chat completions API with `chat` feature:
+
+```toml
+[dependencies]
+oaapi = { version = "0.1.0", features = ["chat"] }
+```
+
+and setting the API key to the environment variable `OPENAI_API_KEY`:
 
 ```env
 OPENAI_API_KEY=your-openai-api-key
