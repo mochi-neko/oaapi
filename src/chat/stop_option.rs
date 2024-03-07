@@ -2,7 +2,7 @@ use crate::macros::impl_enum_with_string_or_array_serialization;
 use crate::ValidationResult;
 use std::fmt::Display;
 
-/// Stop sequence(s) option.
+/// The stop sequence(s) option.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum StopOption {
     /// Single sequence.

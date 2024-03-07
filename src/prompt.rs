@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use std::str::FromStr;
 
-/// A prompt for generations.
+/// The prompt for generations.
 #[derive(
     Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize,
 )]

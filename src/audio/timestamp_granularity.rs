@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-/// Timestamp granularity for the result of the transcription.
+/// The timestamp granularity for the result of the transcription.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimestampGranularity {
     /// Segment-level timestamps.

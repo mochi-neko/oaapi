@@ -73,7 +73,7 @@ impl From<SpecifiedTool> for ToolChoice {
     }
 }
 
-/// Specified tool.
+/// The specified tool.
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpecifiedTool {
     /// The type of the tool. Currently, only function is supported.
@@ -85,7 +85,7 @@ pub struct SpecifiedTool {
 
 impl_display_for_serialize!(SpecifiedTool);
 
-/// Specified function.
+/// The specified function.
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct SpecifiedFunction {
     /// The name of function.

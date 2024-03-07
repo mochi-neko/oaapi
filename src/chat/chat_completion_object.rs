@@ -46,7 +46,7 @@ pub struct ChatCompletionChoice {
 
 impl_display_for_serialize!(ChatCompletionChoice);
 
-/// Usage statistics for the completion request.
+/// The usage statistics for the completion request.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Usage {
     /// Number of tokens in the generated completion.

@@ -1,7 +1,7 @@
 use crate::macros::impl_enum_bool_serialization;
 use std::fmt::Display;
 
-/// Stream option.
+/// The stream option.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum StreamOption {
     /// Return once, not stream. "false"

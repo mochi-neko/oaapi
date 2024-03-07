@@ -3,7 +3,7 @@ use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-/// Max tokens count.
+/// The max tokens count.
 ///
 /// ## Range
 /// `[1, context_window_for_each_model]`

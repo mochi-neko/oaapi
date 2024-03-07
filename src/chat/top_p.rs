@@ -2,7 +2,7 @@ use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-/// Top_p of generation.
+/// The top_p of generation.
 ///
 /// ## Range
 /// `[0.0, 1.0]`

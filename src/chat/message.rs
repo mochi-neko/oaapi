@@ -6,7 +6,7 @@ use crate::macros::{
     impl_display_for_serialize, impl_enum_struct_serialization,
 };
 
-/// A message of chat.
+/// The message of chat.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Message {
     /// System message.

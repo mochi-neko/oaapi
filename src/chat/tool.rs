@@ -5,7 +5,7 @@ use crate::macros::{
     impl_display_for_serialize, impl_enum_string_serialization,
 };
 
-/// Tool that the model may call.
+/// The tool that the model may call.
 #[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Tool {
     /// The type of the tool. Currently, only function is supported.
@@ -63,7 +63,7 @@ impl_enum_string_serialization!(
     Function => "function"
 );
 
-/// Function tha the model may call by tool.
+/// The function tha the model may call by tool.
 #[derive(Debug, Default, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Function {
     /// A description of what the function does, used by the model to choose when and how to call the function.

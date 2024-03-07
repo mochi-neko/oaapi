@@ -2,7 +2,7 @@ use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-/// Temperature for generations.
+/// The temperature for generations.
 ///
 /// ## Range
 /// `[0.0, 1.0]`

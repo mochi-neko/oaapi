@@ -1,7 +1,7 @@
 use crate::macros::impl_enum_string_serialization;
 use std::fmt::{Display, Formatter};
 
-/// Models for audio APIs.
+/// The models for audio APIs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AudioModel {
     /// "whisper-1" model.
@@ -27,7 +27,7 @@ impl Display for AudioModel {
     }
 }
 
-/// Text-to-speech models.
+/// The text-to-speech models.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SpeechModel {
     /// tts-1

@@ -8,13 +8,13 @@ use crate::macros::{
     impl_display_for_serialize, impl_enum_string_serialization,
 };
 
-/// Format of a response text.
+/// A format of a response text.
 pub trait TextResponseFormat {
     /// Returns the format type as a request parameter.
     fn format() -> &'static str;
 }
 
-/// Formatter of a response text to a specific type: `<T>`.
+/// A formatter of a response text to a specific type: `<T>`.
 pub trait TextResponseFormatter<T> {
     /// Formats the response text to a specific type: `<T>`.
     fn format(raw_text: String) -> TextFormatResult<T>;

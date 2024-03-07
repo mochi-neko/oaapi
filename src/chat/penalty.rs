@@ -2,7 +2,7 @@ use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-/// Penalty.
+/// The penalty.
 ///
 /// ## Range
 /// `[-2.0, 2.0]`

@@ -50,7 +50,7 @@ impl AssistantMessage {
     }
 }
 
-/// A tool call.
+/// The tool call.
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct ToolCall {
     /// The ID of the tool call.
@@ -64,7 +64,7 @@ pub struct ToolCall {
 
 impl_display_for_serialize!(ToolCall);
 
-/// A function that the model called by tool.
+/// The function that the model called by tool.
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct CalledFunction {
     /// The name of the function to call.

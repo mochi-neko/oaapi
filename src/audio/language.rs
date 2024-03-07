@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-/// ISO 639-1 Language Codes.
+/// The ISO 639-1 Language Codes.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Iso639_1 {
     // A

@@ -1,7 +1,7 @@
 use crate::macros::impl_enum_bool_serialization;
 use std::fmt::Display;
 
-/// Logprobs option.
+/// The logprobs option.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum LogprobsOption {
     /// Do not return logprobs. "false"

@@ -1,8 +1,8 @@
-use std::fmt::Display;
 use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
-/// Top logprobs.
+/// The top logprobs.
 ///
 /// ## Range
 /// `[0, 5]`

@@ -2,7 +2,7 @@ use crate::{ValidationError, ValidationResult};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-/// Bias.
+/// The bias.
 ///
 /// ## Range
 /// `[-100.0, 100.0]`

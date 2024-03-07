@@ -1,7 +1,7 @@
 use crate::macros::impl_display_for_serialize;
 use serde::{Deserialize, Serialize};
 
-/// Log probability information for the choice.
+/// The log probability information for the choice.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct Logprobs {
     /// A list of message content tokens with log probability information.

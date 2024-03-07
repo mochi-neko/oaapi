@@ -78,7 +78,7 @@ impl_enum_with_string_or_array_serialization!(
     Array(MessageContentPart)
 );
 
-/// Content part of a message.
+/// The content part of a message.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum MessageContentPart {
     /// Text content part.
@@ -102,7 +102,7 @@ impl_enum_struct_serialization!(
     Image(ImageContentPart, "image_url")
 );
 
-/// Text content part of a message.
+/// The text content part of a message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct TextContentPart {
     /// The type of the content part, in this case `text`.
@@ -135,7 +135,7 @@ impl TextContentPart {
     }
 }
 
-/// Image content part of a message.
+/// The image content part of a message.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ImageContentPart {
     /// The type of the content part, in this case `image_url`.
@@ -168,7 +168,7 @@ impl ImageContentPart {
     }
 }
 
-/// Image URL of a message content part.
+/// The image URL of a message content part.
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct ImageUrl {
     /// The URL of the image.
@@ -211,7 +211,7 @@ impl ImageUrl {
     }
 }
 
-/// Image format.
+/// The image format.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum ImageFormat {
     /// PNG.
@@ -288,7 +288,7 @@ impl ImageFormat {
     }
 }
 
-/// Image detail to control over how the model processes the image and generates its textual understanding.
+/// The image detail to control over how the model processes the image and generates its textual understanding.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum ImageDetail {
     /// `auto`
