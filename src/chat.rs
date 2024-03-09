@@ -16,6 +16,7 @@ pub use chat_completion_chunk_object::ChatCompletionChunkObject;
 pub use chat_completion_object::ChatCompletionObject;
 pub use error::ChatApiError;
 pub use error::ChatStreamError;
+pub use error::StreamLineError;
 pub use logprobs::Logprobs;
 pub use logprobs::LogprobsContent;
 pub use logprobs::TopLogprobsContent;
@@ -53,6 +54,7 @@ pub use user_message::UserMessage;
 
 pub(crate) use api::completions::complete;
 pub(crate) use api::completions::complete_stream;
+pub(crate) use result::StreamLineResult;
 
 mod api;
 mod assistant_message;
@@ -78,3 +80,5 @@ mod tool_message;
 mod top_logprobs;
 mod top_p;
 mod user_message;
+
+pub(crate) mod stream_line_reader;

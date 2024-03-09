@@ -98,7 +98,6 @@ pub mod audio;
 pub mod chat;
 
 pub(crate) mod macros;
-pub(crate) mod stream_line_reader;
 
 mod api_key;
 mod client;

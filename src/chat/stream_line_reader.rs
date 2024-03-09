@@ -1,24 +1,24 @@
-use std::pin::Pin;
-use std::task::Context;
-
+use crate::chat::{StreamLineError, StreamLineResult};
 use bytes::{Buf, BytesMut};
-use futures::{task::Poll, Stream};
+use futures::{Stream, StreamExt};
+use std::task::Poll;
 
-/// A stream that reads text lines from a stream of bytes.
+/// A stream reader that reads lines from a reqwest response stream.
 pub(crate) struct StreamLineReader<S>
 where
-    S: Stream<Item = Result<bytes::Bytes, reqwest::Error>>,
+    S: Stream<Item = ReqwestStreamItem>,
 {
     stream: S,
     buffer: BytesMut,
 }
 
+type ReqwestStreamItem = Result<bytes::Bytes, reqwest::Error>;
+
 impl<S> StreamLineReader<S>
 where
-    S: Stream<Item = Result<bytes::Bytes, reqwest::Error>>,
+    S: Stream<Item = ReqwestStreamItem>,
 {
-    #[allow(dead_code)]
-    pub fn new(stream: S) -> Self {
+    pub(crate) fn new(stream: S) -> Self {
         StreamLineReader {
             stream,
             buffer: BytesMut::new(),
@@ -28,45 +28,55 @@ where
 
 impl<S> Stream for StreamLineReader<S>
 where
-    S: Stream<Item = Result<bytes::Bytes, reqwest::Error>> + Unpin,
+    S: Stream<Item = ReqwestStreamItem> + Unpin,
 {
-    type Item = Result<String, reqwest::Error>;
+    type Item = StreamLineResult;
 
     fn poll_next(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-    ) -> Poll<Option<Self::Item>> {
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> Poll<Option<StreamLineResult>> {
         loop {
-            if let Some(pos) = self
+            if let Some(position) = self
                 .buffer
                 .iter()
-                .position(|&x| x == b'\n')
+                .position(|b| *b == b'\n')
             {
-                let line = self.buffer.split_to(pos);
-                self.buffer.advance(1); // 改行文字をスキップ
-                let line =
-                    String::from_utf8(line.to_vec()).expect("Invalid UTF-8");
+                let line = self.buffer.split_to(position);
+                self.buffer.advance(1); // Skip the newline character.
+                let line = String::from_utf8(line.to_vec())
+                    .map_err(StreamLineError::StringDeserializationError)?;
                 return Poll::Ready(Some(Ok(line)));
             }
 
-            match Pin::new(&mut self.stream).poll_next(cx) {
+            match self
+                .stream
+                .poll_next_unpin(cx)
+            {
+                // The stream has more data.
                 | Poll::Ready(Some(Ok(chunk))) => {
-                    self.buffer
-                        .extend_from_slice(&chunk);
+                    self.buffer.extend(&chunk);
+                    // Continue to the next iteration of the loop.
                 },
-                | Poll::Ready(Some(Err(e))) => {
-                    return Poll::Ready(Some(Err(e)));
+                // The stream has an error.
+                | Poll::Ready(Some(Err(error))) => {
+                    return Poll::Ready(Some(Err(
+                        StreamLineError::ReqwestError(error),
+                    )));
                 },
+                // The stream has no more data.
                 | Poll::Ready(None) => {
                     return if self.buffer.is_empty() {
                         Poll::Ready(None)
                     } else {
                         let line = self.buffer.split_off(0);
-                        let line = String::from_utf8(line.to_vec())
-                            .expect("Invalid UTF-8");
+                        let line = String::from_utf8(line.to_vec()).map_err(
+                            StreamLineError::StringDeserializationError,
+                        )?;
                         Poll::Ready(Some(Ok(line)))
                     };
                 },
+                // The stream has no more data for now.
                 | Poll::Pending => return Poll::Pending,
             }
         }
