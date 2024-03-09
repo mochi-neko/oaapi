@@ -38,7 +38,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! oaapi = { version = "0.1.0", features = ["chat"] }
+//! oaapi = { version = "0.1.1", features = ["chat"] }
 //! ```
 //!
 //! and setting the API key to the environment variable `OPENAI_API_KEY`:
