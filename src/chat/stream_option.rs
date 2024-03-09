@@ -32,4 +32,4 @@ impl Display for StreamOption {
     }
 }
 
-impl_enum_bool_serialization!(StreamOption, ReturnOnce, ReturnStream);
+impl_enum_bool_serialization!(StreamOption, ReturnStream, ReturnOnce);
