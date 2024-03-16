@@ -1,19 +1,16 @@
+use bytes::Bytes;
 use std::collections::HashMap;
 
-use futures_util::StreamExt;
+use futures_util::Stream;
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc::Receiver;
-use tokio::task::JoinHandle;
 
-use crate::chat::stream_line_reader::StreamLineReader;
+use crate::chat::chunk_stream::ChunkStream;
 use crate::chat::Bias;
 use crate::chat::ChatApiError;
 use crate::chat::ChatApiResult;
-use crate::chat::ChatCompletionChunkObject;
+use crate::chat::ChatChunkResult;
 use crate::chat::ChatCompletionObject;
 use crate::chat::ChatModel;
-use crate::chat::ChatStreamError;
-use crate::chat::ChatStreamResult;
 use crate::chat::LogprobsOption;
 use crate::chat::MaxTokens;
 use crate::chat::Message;
@@ -28,8 +25,6 @@ use crate::chat::TopP;
 use crate::ApiError;
 use crate::Client;
 use crate::Temperature;
-
-const DEFAULT_STREAM_BUFFER_SIZE: usize = 100;
 
 /// The request body for the `/chat/completions` endpoint.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -225,11 +220,7 @@ pub(crate) async fn complete(
 pub(crate) async fn complete_stream(
     client: &Client,
     request_body: CompletionsRequestBody,
-    buffer_size: Option<usize>,
-) -> ChatApiResult<(
-    Receiver<ChatStreamResult>,
-    JoinHandle<()>,
-)> {
+) -> ChatApiResult<impl Stream<Item = ChatChunkResult>> {
     // Check stream option.
     if request_body.stream.is_none() {
         return Err(ChatApiError::StreamOptionMismatch);
@@ -239,8 +230,6 @@ pub(crate) async fn complete_stream(
             return Err(ChatApiError::StreamOptionMismatch);
         }
     }
-
-    let buffer_size = buffer_size.unwrap_or(DEFAULT_STREAM_BUFFER_SIZE);
 
     // Send the request.
     let response = client
@@ -255,74 +244,22 @@ pub(crate) async fn complete_stream(
 
     // Ok
     if status_code.is_success() {
-        // Setup the stream.
-        let stream = response.bytes_stream();
-        let mut reader = StreamLineReader::new(stream);
+        // DEBUG:
+        // Read the response text.
+        let response_text = response
+            .text()
+            .await
+            .map_err(ApiError::ReadResponseTextFailed)?;
+        println!(
+            "DEBUG: response_text: {}",
+            response_text
+        );
+        let stream = futures_util::stream::iter(vec![Ok(Bytes::from(
+            response_text,
+        ))]);
 
-        // Setup the channel.
-        let (sender, receiver) = tokio::sync::mpsc::channel(buffer_size);
-
-        // Spawn a task to read the stream.
-        let handle = tokio::spawn(async move {
-            // Read the stream.
-            while let Some(chunk) = reader.next().await {
-                match chunk {
-                    // Deserialize the chunk.
-                    | Ok(chunk) => {
-                        if chunk == "data [DONE]" {
-                            // Close the channel.
-                            break;
-                        }
-                        if chunk.is_empty() {
-                            continue;
-                        }
-
-                        // Skip fixed header :"data: ".
-                        let chunk = chunk.trim_start_matches("data: ");
-                        match serde_json::from_str::<ChatCompletionChunkObject>(
-                            chunk.as_ref(),
-                        ) {
-                            | Ok(chunk) => {
-                                if let Some(choice) = chunk.choices.first() {
-                                    if let Some(_) = &choice.finish_reason {
-                                        // Close the channel.
-                                        break;
-                                    }
-                                }
-
-                                // Send the chunk.
-                                _ = sender.send(Ok(chunk)).await;
-                            },
-                            | Err(error) => {
-                                let text =
-                                    String::from_utf8_lossy(chunk.as_ref());
-                                _ = sender
-                                    .send(Err(
-                                        ChatStreamError::DeserializeFailed(
-                                            error,
-                                            text.to_string(),
-                                        ),
-                                    ))
-                                    .await;
-
-                                // Close the channel.
-                                break;
-                            },
-                        }
-                    },
-                    | Err(error) => {
-                        _ = sender
-                            .send(Err(ChatStreamError::ErrorChunk(error)))
-                            .await;
-
-                        // Close the channel.
-                        break;
-                    },
-                }
-            }
-        });
-
-        Ok((receiver, handle))
+        let chunk_stream = ChunkStream::new(stream);
+        Ok(chunk_stream)
     }
     // Error
     else {

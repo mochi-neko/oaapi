@@ -15,8 +15,7 @@ pub use bias::Bias;
 pub use chat_completion_chunk_object::ChatCompletionChunkObject;
 pub use chat_completion_object::ChatCompletionObject;
 pub use error::ChatApiError;
-pub use error::ChatStreamError;
-pub use error::StreamLineError;
+pub use error::ChatChunkError;
 pub use logprobs::Logprobs;
 pub use logprobs::LogprobsContent;
 pub use logprobs::TopLogprobsContent;
@@ -28,7 +27,7 @@ pub use penalty::Penalty;
 pub use response_format::ResponseFormat;
 pub use response_format::ResponseFormatType;
 pub use result::ChatApiResult;
-pub use result::ChatStreamResult;
+pub use result::ChatChunkResult;
 pub use role::Role;
 pub use stop_option::StopOption;
 pub use stream_option::StreamOption;
@@ -54,7 +53,6 @@ pub use user_message::UserMessage;
 
 pub(crate) use api::completions::complete;
 pub(crate) use api::completions::complete_stream;
-pub(crate) use result::StreamLineResult;
 
 mod api;
 mod assistant_message;
@@ -81,4 +79,4 @@ mod top_logprobs;
 mod top_p;
 mod user_message;
 
-pub(crate) mod stream_line_reader;
+mod chunk_stream;

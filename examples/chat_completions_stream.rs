@@ -3,11 +3,17 @@
 //! ```shell
 //! $ cargo run --example chat_completions_stream --features chat -- --prompt <prompt> --message <message>
 //! ```
+//!
+//! e.g.
+//! ```shell
+//! $ cargo run --example chat_completions_stream --features chat -- --prompt "You are a excellent AI assistant." --message "Where is the capital of Japan?"
+//! ```
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use clap::Parser;
+use futures_util::stream::StreamExt;
 
 use oaapi::chat::ChatModel;
 use oaapi::chat::CompletionsRequestBody;
@@ -39,8 +45,8 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let (mut receiver, stream_handle) = client
-        .chat_complete_stream(request_body, None)
+    let mut stream = client
+        .chat_complete_stream(request_body)
         .await?;
 
     let mut text_buffer = String::new();
@@ -52,46 +58,43 @@ async fn main() -> anyhow::Result<()> {
         r.store(false, Ordering::SeqCst);
     })?;
 
-    while running.load(Ordering::SeqCst) {
-        while let Some(response) = receiver.recv().await {
-            match response {
-                | Ok(chunk) => {
-                    println!("Delta: {}", chunk);
-                    text_buffer.push_str(
-                        chunk
-                            .choices
-                            .first()
-                            .unwrap()
-                            .delta
-                            .content
-                            .as_ref()
-                            .unwrap()
-                            .as_str(),
-                    );
-                },
-                | Err(error) => {
-                    eprintln!(
-                        "Error: {}, buffer: {}",
-                        error, text_buffer
-                    );
-                    stream_handle.abort();
-                    return Err(error.into());
-                },
-            }
+    while let Some(response) = stream.next().await {
+        if !running.load(Ordering::SeqCst) {
+            println!(
+                "Cancel streaming with buffer: {}",
+                text_buffer
+            );
+            return Ok(());
         }
 
-        println!(
-            "Finish streaming with buffer: {}",
-            text_buffer
-        );
-        stream_handle.abort();
-        return Ok(());
+        match response {
+            | Ok(chunk) => {
+                println!("Delta: {}", chunk);
+
+                if let Some(delta) = chunk
+                    .choices
+                    .first()
+                    .unwrap()
+                    .delta
+                    .as_ref()
+                    .unwrap()
+                    .content
+                    .clone()
+                {
+                    text_buffer.push_str(delta.clone().as_str());
+                }
+            },
+            | Err(error) => {
+                eprintln!(
+                    "Error: {}, buffer: {}",
+                    error, text_buffer
+                );
+                return Err(error.into());
+            },
+        }
     }
 
-    println!(
-        "Cancel streaming with buffer: {}",
-        text_buffer
-    );
-    stream_handle.abort();
+    println!("Result:\n{}", text_buffer);
+
     Ok(())
 }

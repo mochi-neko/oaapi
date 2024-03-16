@@ -1,11 +1,9 @@
-use crate::chat::ChatStreamError;
-use crate::chat::{ChatCompletionChunkObject, StreamLineError};
-
-/// The result of streaming chat completions.
-pub type ChatStreamResult = Result<ChatCompletionChunkObject, ChatStreamError>;
+use crate::chat::ChatApiError;
+use crate::chat::ChatChunkError;
+use crate::chat::ChatCompletionChunkObject;
 
 /// The result of a chat API calling.
-pub type ChatApiResult<T> = Result<T, crate::chat::error::ChatApiError>;
+pub type ChatApiResult<T> = Result<T, ChatApiError>;
 
-/// The result of a stream line.
-pub(crate) type StreamLineResult = Result<String, StreamLineError>;
+/// The result of a chunk for streaming chat completions.
+pub type ChatChunkResult = Result<ChatCompletionChunkObject, ChatChunkError>;

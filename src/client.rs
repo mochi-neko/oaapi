@@ -5,13 +5,14 @@ use crate::audio::{
 };
 #[cfg(feature = "chat")]
 use crate::chat::{
-    ChatApiResult, ChatCompletionObject, ChatStreamResult,
+    ChatApiResult, ChatChunkResult, ChatCompletionObject,
     CompletionsRequestBody,
 };
 use crate::ApiKey;
 use crate::ApiResult;
 use crate::OrganizationId;
 
+use futures_util::Stream;
 use std::env::VarError;
 
 #[cfg(feature = "audio")]
@@ -560,11 +561,9 @@ impl Client {
     ///
     /// ## Arguments
     /// - `request_body` - The request body of the completions.
-    /// - `buffer_size` - The buffer size of the stream.
     ///
-    /// ## Returns
-    /// - The receiver of the stream of chat completions.
-    /// - The handle of the stream.
+    /// ## NOTE
+    /// Specify `stream` option to `StreamOption::ReturnStream` to enable streaming.
     ///
     /// ## Example
     /// ```no_run
@@ -584,18 +583,15 @@ impl Client {
     ///             UserMessage::new("Chat message from user.".into(), None).into(),
     ///         ],
     ///         model: ChatModel::Gpt35Turbo,
-    ///         stream: Some(StreamOption::ReturnStream),
+    ///         stream: Some(StreamOption::ReturnStream), // Enable streaming.
     ///         ..Default::default()
     ///     };
     ///
-    ///     let (receiver, handle) = client
-    ///         .chat_complete_stream(request_body, None)
+    ///     let mut stream = client
+    ///         .chat_complete_stream(request_body)
     ///         .await?;
     ///
     ///     // Receive the stream of chat completions.
-    ///
-    ///     // Abort the stream when it is not needed.
-    ///     handle.abort();
     ///
     ///     Ok(())
     /// }
@@ -603,11 +599,7 @@ impl Client {
     pub async fn chat_complete_stream(
         &self,
         request_body: CompletionsRequestBody,
-        buffer_size: Option<usize>,
-    ) -> ChatApiResult<(
-        Receiver<ChatStreamResult>,
-        JoinHandle<()>,
-    )> {
-        crate::chat::complete_stream(&self, request_body, buffer_size).await
+    ) -> ChatApiResult<impl Stream<Item = ChatChunkResult>> {
+        crate::chat::complete_stream(&self, request_body).await
     }
 }

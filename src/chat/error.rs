@@ -1,16 +1,5 @@
 use crate::ApiError;
 
-/// The error of a chat stream.
-#[derive(Debug, thiserror::Error)]
-pub enum ChatStreamError {
-    /// Failed to read stream line.
-    #[error("Failed to read stream line: {0:?}")]
-    ErrorChunk(#[from] StreamLineError),
-    /// Failed to deserialize chunk.
-    #[error("Failed to deserialize chunk: {0:?}, {1}")]
-    DeserializeFailed(serde_json::Error, String),
-}
-
 /// The error of a chat API calling.
 #[derive(Debug, thiserror::Error)]
 pub enum ChatApiError {
@@ -22,11 +11,19 @@ pub enum ChatApiError {
     StreamOptionMismatch,
 }
 
-/// The error of a stream line.
+/// The error of a chunk of chat stream.
 #[derive(Debug, thiserror::Error)]
-pub enum StreamLineError {
-    #[error("Failed to read reqest stream: {0:?}")]
-    ReqwestError(#[from] reqwest::Error),
-    #[error("Failed to deserialize chunk to UTF-8 string: {0:?}")]
-    StringDeserializationError(#[from] std::string::FromUtf8Error),
+pub enum ChatChunkError {
+    /// Stream error.
+    #[error("Stream error: {0:?}")]
+    StreamError(#[from] reqwest::Error),
+    /// Failed to decode chunk of stream to UTF-8 string.
+    #[error("Failed to decode chunk of stream to UTF-8 string: {0:?}")]
+    StringDecodingError(#[from] std::string::FromUtf8Error),
+    /// Data prefix missing.
+    #[error("Data prefix missing: {0}")]
+    DataPrefixMissing(String),
+    /// Failed to deserialize chunk.
+    #[error("Failed to deserialize chunk: {0:?} from: {1}")]
+    DeserializeFailed(serde_json::Error, String),
 }
