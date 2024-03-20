@@ -23,10 +23,11 @@ async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
     let client = Client::from_env()?;
 
+    let file = tokio::fs::read(arguments.file_path.clone()).await?;
+    let file = File::new(arguments.file_path, file)?;
+
     let request_body = TranslationsRequestBody {
-        file: File::from_file_path(
-            Path::new(&arguments.file_path).to_path_buf(),
-        )?,
+        file,
         ..Default::default()
     };
 

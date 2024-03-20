@@ -158,9 +158,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranscriptionsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -194,9 +194,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranscriptionsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -230,9 +230,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranscriptionsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -266,9 +266,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranscriptionsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -302,9 +302,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranscriptionsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -338,9 +338,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranslationsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -374,9 +374,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranslationsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -410,9 +410,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranslationsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -446,9 +446,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranslationsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -482,9 +482,9 @@ impl Client {
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
     ///     let client = Client::from_env()?;
-    ///     let file = File::from_file_path(
-    ///         "path/to/audio/file".into(),
-    ///     )?;
+    ///     let file_path = "path/to/audio/file.mp3";
+    ///     let file = tokio::fs::read(file_path).await?;
+    ///     let file = File::new(file_path, file)?;
     ///     let request_body = TranslationsRequestBody {
     ///         file,
     ///         ..Default::default()
@@ -563,7 +563,7 @@ impl Client {
     /// use oaapi::chat::UserMessage;
     /// use oaapi::chat::ChatModel;
     /// use oaapi::chat::StreamOption;
-    /// 
+    ///
     /// use tokio_stream::StreamExt;
     ///
     /// #[tokio::main]

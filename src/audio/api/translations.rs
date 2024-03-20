@@ -22,7 +22,7 @@ use crate::Prompt;
 use crate::Temperature;
 
 /// The request boyd for the `/audio/translations` endpoint.
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Default)]
 pub struct TranslationsRequestBody {
     /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
     pub file: File,
@@ -73,15 +73,13 @@ impl TranslationsRequestBody {
     }
 
     /// Builds a multipart form from the request body.
-    async fn build_form<F, T>(self) -> AudioApiResult<Form>
+    async fn build_form<F, T>(self) -> Form
     where
         F: TextResponseFormat,
         T: TextResponseFormatter<F>,
     {
-        let file = self.file.build_part().await?;
-
         let mut form = Form::new()
-            .part("file", file)
+            .part("file", self.file.part)
             .text("model", self.model.to_string())
             .text("response_format", F::format());
 
@@ -93,7 +91,7 @@ impl TranslationsRequestBody {
             form = form.text("temperature", temperature.format());
         }
 
-        Ok(form)
+        form
     }
 }
 
@@ -108,7 +106,7 @@ where
     // Build the multipart form.
     let form = request_body
         .build_form::<F, T>()
-        .await?;
+        .await;
 
     // Send the request.
     let response = client
