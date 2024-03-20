@@ -1,15 +1,18 @@
 use bytes::{Buf, BytesMut};
-use futures_util::{Stream, StreamExt};
+use futures_core::Stream;
+use pin_project::pin_project;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
 use crate::chat::{ChatChunkError, ChatChunkResult, ChatCompletionChunkObject};
 
 /// A stream of message chunks.
+#[pin_project]
 pub(crate) struct ChunkStream<S>
 where
     S: Stream<Item = ReqwestStreamItem> + Unpin,
 {
+    #[pin]
     stream: S,
     buffer: BytesMut,
 }
@@ -35,17 +38,19 @@ where
     type Item = ChatChunkResult;
 
     fn poll_next(
-        mut self: Pin<&mut Self>,
+        self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Poll<Option<ChatChunkResult>> {
+        let mut this = self.project();
+
         loop {
-            if let Some(position) = self
+            if let Some(position) = this
                 .buffer
                 .iter()
                 .position(|b| *b == b'\n')
             {
-                let line = self.buffer.split_to(position);
-                self.buffer.advance(1); // Skip the newline character.
+                let line = this.buffer.split_to(position);
+                this.buffer.advance(1); // Skip the newline character.
                 let line = String::from_utf8(line.to_vec())
                     .map_err(ChatChunkError::StringDecodingError)?;
                 if line == "data: [DONE]" {
@@ -54,7 +59,7 @@ where
                 if line.is_empty() {
                     continue;
                 }
-                
+
                 let data = line
                     .strip_prefix("data: ")
                     .ok_or_else(|| {
@@ -71,13 +76,14 @@ where
                 return Poll::Ready(Some(Ok(chunk)));
             }
 
-            match self
+            match this
                 .stream
-                .poll_next_unpin(cx)
+                .as_mut()
+                .poll_next(cx)
             {
                 // The stream has more data.
                 | Poll::Ready(Some(Ok(chunk))) => {
-                    self.buffer.extend(&chunk);
+                    this.buffer.extend(&chunk);
                     // Continue to the next iteration of the loop.
                 },
                 // The stream has an error.
@@ -88,16 +94,19 @@ where
                 },
                 // The stream has no more data.
                 | Poll::Ready(None) => {
-                    return if self.buffer.is_empty() {
+                    return if this.buffer.is_empty() {
                         Poll::Ready(None)
                     } else {
-                        let line = self.buffer.split_off(0);
+                        let line = this.buffer.split_off(0);
                         let line = String::from_utf8(line.to_vec())
                             .map_err(ChatChunkError::StringDecodingError)?;
                         if line == "data: [DONE]" {
                             return Poll::Ready(None);
                         }
-                        
+                        if line.is_empty() {
+                            return Poll::Ready(None);
+                        }
+
                         let data = line
                             .strip_prefix("data: ")
                             .ok_or_else(|| {
@@ -129,7 +138,7 @@ mod tests {
     };
     use crate::chat::{ChatModel, Role};
     use bytes::Bytes;
-    use futures_util::{stream, StreamExt};
+    use tokio_stream::StreamExt;
 
     use super::*;
 
@@ -145,7 +154,7 @@ data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190
 
 "#;
 
-        let input_stream = stream::iter(vec![Ok(Bytes::from(
+        let input_stream = tokio_stream::iter(vec![Ok(Bytes::from(
             source,
         ))]);
         let mut stream = ChunkStream::new(input_stream);

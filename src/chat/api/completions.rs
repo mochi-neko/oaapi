@@ -1,7 +1,6 @@
-use bytes::Bytes;
 use std::collections::HashMap;
 
-use futures_util::Stream;
+use futures_core::Stream;
 use serde::{Deserialize, Serialize};
 
 use crate::chat::chunk_stream::ChunkStream;
@@ -244,22 +243,9 @@ pub(crate) async fn complete_stream(
 
     // Ok
     if status_code.is_success() {
-        // DEBUG:
-        // Read the response text.
-        let response_text = response
-            .text()
-            .await
-            .map_err(ApiError::ReadResponseTextFailed)?;
-        println!(
-            "DEBUG: response_text: {}",
-            response_text
-        );
-        let stream = futures_util::stream::iter(vec![Ok(Bytes::from(
-            response_text,
-        ))]);
-
-        let chunk_stream = ChunkStream::new(stream);
-        Ok(chunk_stream)
+        Ok(ChunkStream::new(
+            response.bytes_stream(),
+        ))
     }
     // Error
     else {

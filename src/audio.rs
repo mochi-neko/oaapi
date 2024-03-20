@@ -19,7 +19,6 @@ pub use api::speech::SpeechRequestBody;
 pub use api::transcriptions::TranscriptionsRequestBody;
 pub use api::translations::TranslationsRequestBody;
 pub use error::AudioApiError;
-pub use error::SpeechStreamError;
 pub use file::File;
 pub use language::Iso639_1;
 pub use model::AudioModel;

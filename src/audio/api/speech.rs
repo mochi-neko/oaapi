@@ -1,20 +1,16 @@
-use futures_util::StreamExt;
+use futures_core::Stream;
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc::Receiver;
-use tokio::task::JoinHandle;
 
 use crate::audio::SpeechInput;
 use crate::audio::SpeechModel;
 use crate::audio::SpeechResponseFormat;
-use crate::audio::SpeechStreamError;
 use crate::audio::SpeechStreamResult;
 use crate::audio::Speed;
 use crate::audio::Voice;
 use crate::macros::impl_display_for_serialize;
 use crate::ApiError;
+use crate::ApiResult;
 use crate::Client;
-
-const DEFAULT_STREAM_BUFFER_SIZE: usize = 16 * 1024;
 
 /// The request body for the `/audio/speech` endpoint.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -38,13 +34,7 @@ impl_display_for_serialize!(SpeechRequestBody);
 pub(crate) async fn speech(
     client: &Client,
     request_body: SpeechRequestBody,
-    buffer_size: Option<usize>,
-) -> crate::ApiResult<(
-    Receiver<SpeechStreamResult>,
-    JoinHandle<()>,
-)> {
-    let buffer_size = buffer_size.unwrap_or(DEFAULT_STREAM_BUFFER_SIZE);
-
+) -> ApiResult<impl Stream<Item = SpeechStreamResult>> {
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/audio/speech")
@@ -58,36 +48,7 @@ pub(crate) async fn speech(
 
     // Ok
     if status_code.is_success() {
-        // Read the response stream.
-        let mut stream = response.bytes_stream();
-
-        // Create a channel to receive the stream.
-        let (sender, receiver) = tokio::sync::mpsc::channel(buffer_size);
-
-        // Spawn a task to handle the stream.
-        let handle = tokio::spawn(async move {
-            // Read the stream.
-            while let Some(chunk) = stream.next().await {
-                match chunk {
-                    | Ok(chunk) => {
-                        // Send the chunk to the receiver.
-                        _ = sender.send(Ok(chunk)).await;
-                    },
-                    | Err(error) => {
-                        // Send the error to the receiver.
-                        _ = sender
-                            .send(Err(SpeechStreamError::ErrorChunk(
-                                error,
-                            )))
-                            .await;
-
-                        break;
-                    },
-                }
-            }
-        });
-
-        Ok((receiver, handle))
+        Ok(response.bytes_stream())
     }
     // Error
     else {

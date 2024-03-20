@@ -1,32 +1,19 @@
+use crate::audio::TextFormatError;
 use crate::ApiError;
-
-/// The error of a speech stream.
-#[derive(Debug, thiserror::Error)]
-pub enum SpeechStreamError {
-    /// Failed to receive chunk.
-    #[error("Failed to receive chunk: {0:?}")]
-    ErrorChunk(reqwest::Error),
-}
 
 /// The error of an audio API calling.
 #[derive(Debug, thiserror::Error)]
 pub enum AudioApiError {
     /// API error of an API calling.
     #[error("API error: {0:?}")]
-    ApiError(ApiError),
+    ApiError(#[from] ApiError),
     /// IO error with an API calling.
     #[error("IO error: {0:?}")]
-    IOError(std::io::Error),
+    IOError(#[from] std::io::Error),
     /// Failed to format response text of an audio API calling.
     #[error("Failed to format response text of audio API: {0:?}")]
-    FormatResponseFailed(crate::audio::TextFormatError),
+    FormatResponseFailed(#[from] TextFormatError),
     /// Timestamp option mismatch.
     #[error("Stream option mismatch, this is only available for verbose_json response format.")]
     TimestampOptionMismatch,
-}
-
-impl From<ApiError> for AudioApiError {
-    fn from(error: ApiError) -> Self {
-        AudioApiError::ApiError(error)
-    }
 }

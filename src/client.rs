@@ -12,16 +12,14 @@ use crate::ApiKey;
 use crate::ApiResult;
 use crate::OrganizationId;
 
-use futures_util::Stream;
+use futures_core::Stream;
+
 use std::env::VarError;
 
 #[cfg(feature = "audio")]
 use subtp::srt::SubRip;
 #[cfg(feature = "audio")]
 use subtp::vtt::WebVtt;
-
-use tokio::sync::mpsc::Receiver;
-use tokio::task::JoinHandle;
 
 /// The client of the OpenAI API.
 #[derive(Clone)]
@@ -112,7 +110,6 @@ impl Client {
     ///
     /// ## Arguments
     /// - `request_body` - The request body of the speech.
-    /// - `buffer_size` - The buffer size of the stream.
     ///
     /// ## Returns
     /// - The receiver of the stream of speech audio.
@@ -133,12 +130,9 @@ impl Client {
     ///         ..Default::default()
     ///     };
     ///
-    ///     let (receiver, handle) = client.audio_speech(request_body, None).await?;
+    ///     let mut stream = client.audio_speech(request_body).await?;
     ///
     ///     // Receive the stream of speech audio.
-    ///
-    ///     // Abort the stream when it is not needed.
-    ///     handle.abort();
     ///
     ///     Ok(())
     /// }
@@ -146,12 +140,8 @@ impl Client {
     pub async fn audio_speech(
         &self,
         request_body: SpeechRequestBody,
-        buffer_size: Option<usize>,
-    ) -> ApiResult<(
-        Receiver<SpeechStreamResult>,
-        JoinHandle<()>,
-    )> {
-        crate::audio::speech(&self, request_body, buffer_size).await
+    ) -> ApiResult<impl Stream<Item = SpeechStreamResult>> {
+        crate::audio::speech(&self, request_body).await
     }
 
     /// Transcribes the given audio into the JSON.
@@ -573,6 +563,8 @@ impl Client {
     /// use oaapi::chat::UserMessage;
     /// use oaapi::chat::ChatModel;
     /// use oaapi::chat::StreamOption;
+    /// 
+    /// use tokio_stream::StreamExt;
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
@@ -591,7 +583,9 @@ impl Client {
     ///         .chat_complete_stream(request_body)
     ///         .await?;
     ///
-    ///     // Receive the stream of chat completions.
+    ///     while let Some(chunk) = stream.next().await {
+    ///         // Receive the stream of chat completion.
+    ///     }
     ///
     ///     Ok(())
     /// }

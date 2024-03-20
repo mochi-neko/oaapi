@@ -5,11 +5,11 @@
 //! ```
 
 use std::str::FromStr;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 
 use clap::Parser;
-use tokio::io::AsyncWriteExt;
+use tokio::fs::OpenOptions;
+use tokio::io::{AsyncWriteExt, BufWriter};
+use tokio_stream::StreamExt;
 
 use oaapi::audio::SpeechInput;
 use oaapi::audio::SpeechRequestBody;
@@ -39,45 +39,29 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
-    let (mut receiver, handle) = client
-        .audio_speech(request_body, None)
+    let file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(arguments.output.clone())
         .await?;
 
-    let mut file = tokio::fs::File::create(arguments.output.clone()).await?;
+    let mut writer = BufWriter::new(file);
 
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    })?;
+    let mut stream = client
+        .audio_speech(request_body)
+        .await?;
 
-    let r = running.clone();
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk?;
+        writer
+            .write_all(&chunk)
+            .await?;
+    }
 
-    let receive_handle = tokio::spawn(async move {
-        while let Some(chunk) = receiver.recv().await {
-            match chunk {
-                | Ok(chunk) => {
-                    _ = file.write(&chunk).await;
-                },
-                | Err(error) => {
-                    eprintln!("Error to receive data: {:?}", error);
-                    break;
-                },
-            }
-        }
+    writer.flush().await?;
 
-        println!(
-            "Save the speech to {}",
-            arguments.output
-        );
-
-        r.store(false, Ordering::SeqCst);
-    });
-
-    while running.load(Ordering::SeqCst) {}
-
-    receive_handle.abort();
-    handle.abort();
+    println!("Speech written to {}", arguments.output);
 
     Ok(())
 }

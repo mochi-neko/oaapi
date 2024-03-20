@@ -13,7 +13,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use clap::Parser;
-use futures_util::stream::StreamExt;
+use tokio_stream::StreamExt;
 
 use oaapi::chat::ChatModel;
 use oaapi::chat::CompletionsRequestBody;
@@ -51,22 +51,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut text_buffer = String::new();
 
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
-
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    })?;
-
     while let Some(response) = stream.next().await {
-        if !running.load(Ordering::SeqCst) {
-            println!(
-                "Cancel streaming with buffer: {}",
-                text_buffer
-            );
-            return Ok(());
-        }
-
         match response {
             | Ok(chunk) => {
                 println!("Delta: {}", chunk);
