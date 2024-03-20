@@ -6,6 +6,91 @@
 //! ## Supported APIs
 //! - [x] [Completions](https://platform.openai.com/docs/api-reference/chat/create)
 //! - [x] [Completions streaming](https://platform.openai.com/docs/api-reference/chat/create)
+//!
+//! ## Examples
+//!
+//! ### Completions
+//! An example to call the chat completions API with the `chat` feature flag is as follows:
+//!
+//! ```no_run
+//! use oaapi::Client;
+//! use oaapi::chat::CompletionsRequestBody;
+//! use oaapi::chat::SystemMessage;
+//! use oaapi::chat::UserMessage;
+//! use oaapi::chat::ChatModel;
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+//!     let client = Client::from_env()?;
+//!     // or specify the API key directly.
+//!     // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+//!
+//!     // 2. Create a request body parameters.
+//!     let request_body = CompletionsRequestBody {
+//!         messages: vec![
+//!             SystemMessage::new("Prompt.", None).into(),
+//!             UserMessage::new("Chat message from user.".into(), None).into(),
+//!         ],
+//!         model: ChatModel::Gpt35Turbo,
+//!         ..Default::default()
+//!     };
+//!
+//!     // 3. Call the API.
+//!     let response = client
+//!         .chat_complete(request_body)
+//!         .await?;
+//!
+//!     // 4. Use the response.
+//!     println!("Result:\n{}", response);
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ### Completions streaming
+//! An example to call the chat completions streaming API with the `chat` feature flag is as follows:
+//!
+//! ```no_run
+//! use oaapi::Client;
+//! use oaapi::chat::CompletionsRequestBody;
+//! use oaapi::chat::SystemMessage;
+//! use oaapi::chat::UserMessage;
+//! use oaapi::chat::ChatModel;
+//! use oaapi::chat::StreamOption;
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+//!     let client = Client::from_env()?;
+//!     // or specify the API key directly.
+//!     // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+//!
+//!     // 2. Create a request body parameters with specifying the streaming option: `StreamOption::ReturnStream`.
+//!     let request_body = CompletionsRequestBody {
+//!         messages: vec![
+//!             SystemMessage::new("Prompt.", None).into(),
+//!             UserMessage::new("Chat message from user.".into(), None).into(),
+//!         ],
+//!         model: ChatModel::Gpt35Turbo,
+//!         stream: Some(StreamOption::ReturnStream),
+//!         ..Default::default()
+//!     };
+//!
+//!     // 3. Call the API.
+//!     let mut stream = client
+//!         .chat_complete_stream(request_body)
+//!         .await?;
+//!
+//!     // 4. Receive the response stream.
+//!     while let Some(response) = stream.next().await {
+//!         // Do something with the response.
+//!         println!("Chunk:\n{}", response);
+//!     }
+//!
+//!     Ok(())
+//! }
+//! ```
 
 pub use api::completions::CompletionsRequestBody;
 pub use assistant_message::AssistantMessage;

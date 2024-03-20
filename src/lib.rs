@@ -30,15 +30,15 @@
 //!
 //! ## Usage
 //! 1. Enable API feature flags that you want to use, e.g. `chat`.
-//! 2. Create a [`crate::Client`] with the API key and the other optional settings.
-//! 3. Use the client to call the APIs, e.g. [`crate::Client::chat_complete`].
+//! 2. Create a [Client](`crate::Client`) with the API key and the other optional settings.
+//! 3. Use the client to call the APIs, e.g. [`Client::chat_complete`].
 //!
 //! ## Example
 //! An example to call the chat completions API with `chat` feature:
 //!
 //! ```toml
 //! [dependencies]
-//! oaapi = { version = "0.1.1", features = ["chat"] }
+//! oaapi = { version = "0.2.0", features = ["chat"] }
 //! ```
 //!
 //! and setting the API key to the environment variable `OPENAI_API_KEY`:
