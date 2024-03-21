@@ -22,10 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2024-03-20
 
+### Added
+
+- Add third party re-exports: `serde_json` and `subtp` in APIs.
+- Add details for documents and examples.
+
 ### Changed
 
 - Replace `Channel` with `Stream` in the `audio/speech` API.
 - Replace `Channel` with `Stream` in the `chat/completions` streaming API.
+- Improve third party dependencies with improving `oaapi::audio::File`.
 
 ## [0.1.1] - 2024-03-09
 
