@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `messages` APIs.
 - Add `runs` APIs.
 
-## [0.2.0] - 2024-03-20
+## [0.2.0] - 2024-03-21
 
 ### Added
 
