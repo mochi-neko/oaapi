@@ -8,8 +8,8 @@ use crate::chat::{
     ChatApiResult, ChatChunkResult, ChatCompletionObject,
     CompletionsRequestBody,
 };
+
 use crate::ApiKey;
-use crate::ApiResult;
 use crate::OrganizationId;
 
 use futures_core::Stream;
@@ -157,7 +157,7 @@ impl Client {
     pub async fn audio_speech(
         &self,
         request_body: SpeechRequestBody,
-    ) -> ApiResult<impl Stream<Item = SpeechStreamResult>> {
+    ) -> AudioApiResult<impl Stream<Item = SpeechStreamResult>> {
         crate::audio::speech(&self, request_body).await
     }
 

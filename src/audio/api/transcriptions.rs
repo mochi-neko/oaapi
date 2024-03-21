@@ -20,6 +20,7 @@ use crate::audio::VerboseJsonResponseFormatter;
 use crate::audio::VttResponseFormatter;
 use crate::ApiError;
 use crate::Client;
+use crate::ClientError;
 use crate::Prompt;
 use crate::Temperature;
 
@@ -162,7 +163,7 @@ where
         .multipart(form)
         .send()
         .await
-        .map_err(ApiError::HttpRequestError)?;
+        .map_err(ClientError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -171,7 +172,7 @@ where
     let response_text = response
         .text()
         .await
-        .map_err(ApiError::ReadResponseTextFailed)?;
+        .map_err(ClientError::ReadResponseTextFailed)?;
 
     // OK
     if status_code.is_success() {
@@ -184,13 +185,13 @@ where
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                ApiError::ErrorResponseDeserializationFailed {
+                ClientError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(ApiError::ApiResponseError {
+        Err(ApiError {
             status_code,
             error_response,
         }

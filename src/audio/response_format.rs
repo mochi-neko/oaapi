@@ -2,7 +2,9 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use subtp::srt::SubRip;
 use subtp::vtt::WebVtt;
-use subtp::ParseError;
+
+use crate::audio::TextFormatError;
+use crate::audio::TextFormatResult;
 
 use crate::macros::{
     impl_display_for_serialize, impl_enum_string_serialization,
@@ -19,38 +21,6 @@ pub trait TextResponseFormatter<T> {
     /// Formats the response text to a specific type: `<T>`.
     fn format(raw_text: String) -> TextFormatResult<T>;
 }
-
-/// The error of formatting a response text.
-#[derive(Debug, thiserror::Error)]
-pub enum TextFormatError {
-    /// The error of formatting a response text into JSON.
-    #[error("Failed to format into JSON: {error:?}, {text}")]
-    FormatJsonFailed {
-        /// The error of deserializing a response text.
-        error: serde_json::Error,
-        /// The raw response text.
-        text: String,
-    },
-    /// The error of formatting a response text into SubRip Subtitle format.
-    #[error("Failed to parse into SubRip Subtitle format: {error:?}, {text}")]
-    ParseSrtFailed {
-        /// The error of parsing a response text.
-        error: ParseError,
-        /// The raw response text.
-        text: String,
-    },
-    /// The error of formatting a response text into WebVTT format.
-    #[error("Failed to parse into WebVTT format: {error:?}, {text}")]
-    ParseVttFailed {
-        /// The error of parsing a response text.
-        error: ParseError,
-        /// The raw response text.
-        text: String,
-    },
-}
-
-/// The result of formatting a response text.
-pub(crate) type TextFormatResult<T> = std::result::Result<T, TextFormatError>;
 
 /// The JSON response.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize, serde::Serialize)]

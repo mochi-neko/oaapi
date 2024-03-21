@@ -1,6 +1,7 @@
 use futures_core::Stream;
 use serde::{Deserialize, Serialize};
 
+use crate::audio::AudioApiResult;
 use crate::audio::SpeechInput;
 use crate::audio::SpeechModel;
 use crate::audio::SpeechResponseFormat;
@@ -9,8 +10,8 @@ use crate::audio::Speed;
 use crate::audio::Voice;
 use crate::macros::impl_display_for_serialize;
 use crate::ApiError;
-use crate::ApiResult;
 use crate::Client;
+use crate::ClientError;
 
 /// The request body for the `/audio/speech` endpoint.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -34,14 +35,14 @@ impl_display_for_serialize!(SpeechRequestBody);
 pub(crate) async fn speech(
     client: &Client,
     request_body: SpeechRequestBody,
-) -> ApiResult<impl Stream<Item = SpeechStreamResult>> {
+) -> AudioApiResult<impl Stream<Item = SpeechStreamResult>> {
     // Send the request.
     let response = client
         .post("https://api.openai.com/v1/audio/speech")
         .json(&request_body)
         .send()
         .await
-        .map_err(ApiError::HttpRequestError)?;
+        .map_err(ClientError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -55,20 +56,20 @@ pub(crate) async fn speech(
         let response_text = response
             .text()
             .await
-            .map_err(ApiError::ReadResponseTextFailed)?;
+            .map_err(ClientError::ReadResponseTextFailed)?;
 
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                ApiError::ErrorResponseDeserializationFailed {
+                ClientError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(ApiError::ApiResponseError {
+        Err(ApiError {
             status_code,
             error_response,
-        })
+        }.into())
     }
 }

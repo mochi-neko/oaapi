@@ -1,8 +1,12 @@
 use crate::ApiError;
+use crate::ClientError;
 
 /// The error of a chat API calling.
 #[derive(Debug, thiserror::Error)]
 pub enum ChatApiError {
+    /// Client error of an API calling.
+    #[error("Client error: {0:?}")]
+    ClientError(#[from] ClientError),
     /// API error of an API calling.
     #[error("API error: {0:?}")]
     ApiError(#[from] ApiError),

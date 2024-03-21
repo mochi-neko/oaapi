@@ -1,8 +1,9 @@
+use crate::macros::impl_display_for_serialize;
 use std::fmt::Display;
 
-/// The error of an API calling.
+/// The error of the client API calling.
 #[derive(Debug, thiserror::Error)]
-pub enum ApiError {
+pub enum ClientError {
     /// HTTP request error of an API calling.
     #[error("HTTP request error: {0:?}")]
     HttpRequestError(reqwest::Error),
@@ -23,23 +24,41 @@ pub enum ApiError {
         error: serde_json::Error,
         text: String,
     },
-    /// API response error of an API calling.
-    #[error("API error: {status_code:?}, {error_response:?}")]
-    ApiResponseError {
-        status_code: reqwest::StatusCode,
-        error_response: ErrorResponse,
-    },
+}
+
+/// The error of an API.
+#[derive(Debug, thiserror::Error)]
+pub struct ApiError {
+    /// The status code of the response.
+    pub status_code: reqwest::StatusCode,
+    /// The error response of the API calling.
+    pub error_response: ErrorResponse,
+}
+
+impl Display for ApiError {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        write!(
+            f,
+            "API error with status code: {}, error: {}",
+            self.status_code, self.error_response,
+        )
+    }
 }
 
 /// The error response of an API calling.
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ErrorResponse {
     #[serde(rename = "error")]
     pub error: ApiErrorBody,
 }
 
+impl_display_for_serialize!(ErrorResponse);
+
 /// The error body of an API error response.
-#[derive(serde::Deserialize, Debug)]
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ApiErrorBody {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub code: Option<String>,
@@ -49,6 +68,8 @@ pub struct ApiErrorBody {
     #[serde(rename = "type")]
     pub _type: String,
 }
+
+impl_display_for_serialize!(ApiErrorBody);
 
 /// The error of a validation.
 #[derive(Debug, thiserror::Error)]

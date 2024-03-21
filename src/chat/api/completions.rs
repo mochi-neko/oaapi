@@ -23,6 +23,7 @@ use crate::chat::TopLogprobs;
 use crate::chat::TopP;
 use crate::ApiError;
 use crate::Client;
+use crate::ClientError;
 use crate::Temperature;
 
 /// The request body for the `/chat/completions` endpoint.
@@ -173,7 +174,7 @@ pub(crate) async fn complete(
         .json(&request_body)
         .send()
         .await
-        .map_err(ApiError::HttpRequestError)?;
+        .map_err(ClientError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -182,14 +183,14 @@ pub(crate) async fn complete(
     let response_text = response
         .text()
         .await
-        .map_err(ApiError::ReadResponseTextFailed)?;
+        .map_err(ClientError::ReadResponseTextFailed)?;
 
     // Ok
     if status_code.is_success() {
         // Deserialize the response.
         serde_json::from_str(&response_text).map_err(|error| {
             {
-                ApiError::ResponseDeserializationFailed {
+                ClientError::ResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
@@ -202,13 +203,13 @@ pub(crate) async fn complete(
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                ApiError::ErrorResponseDeserializationFailed {
+                ClientError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(ApiError::ApiResponseError {
+        Err(ApiError {
             status_code,
             error_response,
         }
@@ -236,7 +237,7 @@ pub(crate) async fn complete_stream(
         .json(&request_body)
         .send()
         .await
-        .map_err(ApiError::HttpRequestError)?;
+        .map_err(ClientError::HttpRequestError)?;
 
     // Check the response status code.
     let status_code = response.status();
@@ -253,18 +254,18 @@ pub(crate) async fn complete_stream(
         let response_text = response
             .text()
             .await
-            .map_err(ApiError::ReadResponseTextFailed)?;
+            .map_err(ClientError::ReadResponseTextFailed)?;
 
         // Deserialize the error response.
         let error_response =
             serde_json::from_str(&response_text).map_err(|error| {
-                ApiError::ErrorResponseDeserializationFailed {
+                ClientError::ErrorResponseDeserializationFailed {
                     error,
                     text: response_text,
                 }
             })?;
 
-        Err(ApiError::ApiResponseError {
+        Err(ApiError {
             status_code,
             error_response,
         }
