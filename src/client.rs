@@ -763,7 +763,7 @@ impl Client {
     ///     // 4. Receive the response stream.
     ///     while let Some(response) = stream.next().await {
     ///         // Do something with the response.
-    ///         println!("Chunk:\n{}", response);
+    ///         println!("Chunk:\n{}", response?);
     ///     }
     ///
     ///     Ok(())
