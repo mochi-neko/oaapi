@@ -14,7 +14,7 @@ or add the following line to your Cargo.toml:
 
 ```toml
 [dependencies]
-oaapi = "0.1.1"
+oaapi = "0.2.0"
 ```
 
 ## Features
