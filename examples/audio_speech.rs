@@ -30,8 +30,13 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Create a request body parameters.
     let request_body = SpeechRequestBody {
         input: SpeechInput::new(arguments.text)?,
         voice: Voice::from_str(&arguments.voice)?,
@@ -39,6 +44,7 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
+    // 3. Set up an output file to write speech audio.
     let file = OpenOptions::new()
         .create(true)
         .write(true)
@@ -48,17 +54,21 @@ async fn main() -> anyhow::Result<()> {
 
     let mut writer = BufWriter::new(file);
 
+    // 4. Call the API.
     let mut stream = client
         .audio_speech(request_body)
         .await?;
 
+    // 4. Read the stream of the speech data.
     while let Some(chunk) = stream.next().await {
+        // 5. Write the chunk data to the output file.
         let chunk = chunk?;
         writer
             .write_all(&chunk)
             .await?;
     }
 
+    // 6. Flush the output file.
     writer.flush().await?;
 
     println!("Speech written to {}", arguments.output);

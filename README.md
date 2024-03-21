@@ -1,7 +1,9 @@
 # oaapi
+
 An unofficial Rust client for [the OpenAI API](https://platform.openai.com/docs/api-reference).
 
 ## Installation
+
 Run the following Cargo command in your project directory:
 
 ```shell
@@ -16,6 +18,7 @@ oaapi = "0.1.1"
 ```
 
 ## Features
+
 - [`audio`](/src/audio.rs)
 - [`chat`](/src/chat.rs)
 
@@ -23,6 +26,7 @@ oaapi = "0.1.1"
 > You need to enable the feature flags to use the corresponding APIs.
 
 ## Supported APIs
+
 - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
     - [x] [speech](https://platform.openai.com/docs/api-reference/audio/createSpeech)
     - [x] [transcriptions](https://platform.openai.com/docs/api-reference/audio/createTranscription)
@@ -38,25 +42,28 @@ oaapi = "0.1.1"
 - [ ] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
 
 Beta version APIs:
+
 - [ ] [Assistants](https://platform.openai.com/docs/api-reference/assistants)
 - [ ] [Threads](https://platform.openai.com/docs/api-reference/threads)
 - [ ] [Messages](https://platform.openai.com/docs/api-reference/messages)
 - [ ] [Runs](https://platform.openai.com/docs/api-reference/runs)
 
 ## Usage
+
 1. Enable API feature flags that you want to use, e.g. `chat`.
 2. Create a [`crate::Client`] with the API key and the other optional settings.
 3. Use the client to call the APIs, e.g. [`crate::Client::chat_complete`].
 
-## Example
-An example to call the chat completions API with `chat` feature:
+## Examples
+
+An example to call the chat completions API with the `chat` feature:
 
 ```toml
 [dependencies]
-oaapi = { version = "0.1.1", features = ["chat"] }
+oaapi = { version = "0.2.0", features = ["chat"] }
 ```
 
-and setting the API key to the environment variable `OPENAI_API_KEY`:
+and setting the API key to the environment variable: `OPENAI_API_KEY`
 
 ```env
 OPENAI_API_KEY={your-openai-api-key}
@@ -73,8 +80,10 @@ use oaapi::chat::ChatModel;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // 1. Create a client, e.g. with API key loaded from the environment variable: `OPENAI_API_KEY`.
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
     let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
 
     // 2. Create a request body parameters.
     let request_body = CompletionsRequestBody {
@@ -91,9 +100,14 @@ async fn main() -> anyhow::Result<()> {
         .chat_complete(request_body)
         .await?;
 
+    // 4. Use the response.
+    println!("Result:\n{}", response);
+
     Ok(())
 }
 ```
+
+See also examples in documents of each feature module for more details.
 
 ## Other examples
 
@@ -105,4 +119,5 @@ See [CHANGELOG](./CHANGELOG.md).
 
 ## License
 
-Licensed under either of the [Apache License, Version 2.0](./LICENSE-APACHE) or the [MIT](./LICENSE-MIT) license at your option.
+Licensed under either of the [Apache License, Version 2.0](./LICENSE-APACHE) or the [MIT](./LICENSE-MIT) license at your
+option.

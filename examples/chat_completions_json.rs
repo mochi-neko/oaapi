@@ -43,8 +43,13 @@ impl Display for CustomResponse {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Set up a prompt that instructs the JSON response format.
     let prompt = r#"
         You are an AI assitant that helps people with their problems.
         You can give advice on any topic as its expert.
@@ -72,6 +77,7 @@ async fn main() -> anyhow::Result<()> {
         END OF EXAMPLE
     "#; // Instruct to custom JSON response format with few examples.
 
+    // 3. Create a request body parameters with the JSON response format.
     let request_body = CompletionsRequestBody {
         messages: vec![
             SystemMessage::new(prompt, None).into(),
@@ -82,10 +88,12 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
+    // 3. Call the API.
     let response = client
         .chat_complete(request_body)
         .await?;
 
+    // 4. Take message content from the response.
     let content = response
         .choices
         .first()
@@ -95,9 +103,10 @@ async fn main() -> anyhow::Result<()> {
         .as_ref()
         .unwrap();
 
-    // Deserialize custom JSON response.
+    // 5. Deserialize message to the custom JSON response.
     let custom_response = serde_json::from_str::<CustomResponse>(&content)?;
 
+    // 6. Use the response.
     println!("Result:\n{}", custom_response);
 
     Ok(())

@@ -10,7 +10,7 @@
 //! ## Examples
 //!
 //! ### Completions
-//! An example to call the chat completions API with the `chat` feature flag is as follows:
+//! An example to call the chat completions API with the `chat` feature flag, `tokio` and `anyhow` crate is as follows:
 //!
 //! ```no_run
 //! use oaapi::Client;
@@ -49,7 +49,7 @@
 //! ```
 //!
 //! ### Completions streaming
-//! An example to call the chat completions streaming API with the `chat` feature flag is as follows:
+//! An example to call the chat completions streaming API with the `chat` feature flag, `tokio`, `anyhow` and `tokio_stream` crate is as follows:
 //!
 //! ```no_run
 //! use oaapi::Client;
@@ -58,6 +58,8 @@
 //! use oaapi::chat::UserMessage;
 //! use oaapi::chat::ChatModel;
 //! use oaapi::chat::StreamOption;
+//!
+//! use tokio_stream::StreamExt;
 //!
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {

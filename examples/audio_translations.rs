@@ -4,8 +4,6 @@
 //! $ cargo run --example audio_translations --features audio -- --file-path <file-path>
 //! ```
 
-use std::path::Path;
-
 use clap::Parser;
 
 use oaapi::audio::File;
@@ -21,21 +19,29 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
-    let file = tokio::fs::read(arguments.file_path.clone()).await?;
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Load the audio file that you want to translate.
+    let file = tokio::fs::read(&arguments.file_path).await?;
     let file = File::new(arguments.file_path, file)?;
 
+    // 3. Create a request body parameters.
     let request_body = TranslationsRequestBody {
         file,
         ..Default::default()
     };
 
+    // 4. Call the API with specifying the response format.
     let response = client
-        .audio_translate_into_json(request_body)
+        .audio_translate_into_plain_text(request_body)
         .await?;
 
-    println!("Result:\n{}", response.text);
+    // 5. Use the response.
+    println!("Result:\n{}", response);
 
     Ok(())
 }

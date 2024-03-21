@@ -23,8 +23,13 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Create a request body parameters.
     let request_body = CompletionsRequestBody {
         messages: vec![
             SystemMessage::new(arguments.prompt, None).into(),
@@ -34,18 +39,13 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
 
+    // 3. Call the API.
     let response = client
         .chat_complete(request_body)
         .await?;
 
-    println!(
-        "Result:\n{}",
-        response
-            .choices
-            .first()
-            .unwrap()
-            .message
-    );
+    // 4. Use the response.
+    println!("Result:\n{}", response);
 
     Ok(())
 }

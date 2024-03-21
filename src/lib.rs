@@ -1,11 +1,11 @@
-//! An unofficial Rust client for the OpenAI API.
+//! An unofficial Rust client for [the OpenAI API](https://platform.openai.com/docs/api-reference).
 //!
-//! ## Features
+//! ## Feature flags
 //! - [`audio`](`crate::audio`)
 //! - [`chat`](`crate::chat`)
 //!
 //! > [!NOTE]
-//! > You need to enable the feature flags to use the corresponding APIs.
+//! > You need to enable feature flags to use the corresponding APIs.
 //!
 //! ## Supported APIs
 //! - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
@@ -33,15 +33,17 @@
 //! 2. Create a [Client](`crate::Client`) with the API key and the other optional settings.
 //! 3. Use the client to call the APIs, e.g. [`Client::chat_complete`].
 //!
-//! ## Example
-//! An example to call the chat completions API with `chat` feature:
+//! See also examples in documents of each feature module for more details.
+//!
+//! ## Examples
+//! An example to call the chat completions API with the `chat` feature flag:
 //!
 //! ```toml
 //! [dependencies]
 //! oaapi = { version = "0.2.0", features = ["chat"] }
 //! ```
 //!
-//! and setting the API key to the environment variable `OPENAI_API_KEY`:
+//! and setting the API key to the environment variable :`OPENAI_API_KEY`
 //!
 //! ```env
 //! OPENAI_API_KEY={your-openai-api-key}
@@ -58,8 +60,10 @@
 //!
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {
-//!     // 1. Create a client, e.g. with API key loaded from the environment variable: `OPENAI_API_KEY`.
+//!     // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
 //!     let client = Client::from_env()?;
+//!     // or specify the API key directly.
+//!     // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
 //!
 //!     // 2. Create a request body parameters.
 //!     let request_body = CompletionsRequestBody {
@@ -76,10 +80,16 @@
 //!         .chat_complete(request_body)
 //!         .await?;
 //!
+//!     // 4. Use the response.
+//!     println!("Result:\n{}", response);
+//!
 //!     Ok(())
 //! }
 //! ```
+//!
+//! See also examples in documents of each feature module for more details.
 
+// Re-exports
 pub use crate::api_key::ApiKey;
 pub use crate::client::Client;
 pub use crate::error::ApiError;
@@ -90,15 +100,22 @@ pub use crate::result::ApiResult;
 pub use crate::result::ValidationResult;
 pub use crate::temperature::Temperature;
 
+// Third party re-exports
 pub use reqwest;
+pub use serde_json;
+#[cfg(feature = "audio")]
+pub use subtp;
 
+// Feature modules
 #[cfg(feature = "audio")]
 pub mod audio;
 #[cfg(feature = "chat")]
 pub mod chat;
 
+// Internal modules
 pub(crate) mod macros;
 
+// Private modules
 mod api_key;
 mod client;
 mod error;

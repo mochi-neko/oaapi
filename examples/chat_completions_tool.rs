@@ -118,8 +118,13 @@ const GET_CURRENT_WEATHER_SCHEMA: &str = r#"
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Set up options for tool calling.
     let prompt = r#"Respond for user message by using some tool."#;
     let function = Function {
         description: Some(
@@ -133,21 +138,24 @@ async fn main() -> anyhow::Result<()> {
     let tools = Some(vec![function.into()]); // Register tools
     let tool_choice = Some(TooChoiceOption::Auto.into()); // Specify tool choice rule
 
+    // 3. Call the API.
     let request_body = CompletionsRequestBody {
         messages: vec![
             SystemMessage::new(prompt, None).into(),
             UserMessage::new(arguments.message.into(), None).into(),
         ],
         model: ChatModel::Gpt35Turbo1106,
-        tools,
-        tool_choice,
+        tools,       // Specify tools
+        tool_choice, // Specify tool choice option
         ..Default::default()
     };
 
+    // 4. Call the API.
     let response = client
         .chat_complete(request_body)
         .await?;
 
+    // 5. Take called function content as a string.
     let arguments = response
         .choices
         .first()
@@ -162,9 +170,11 @@ async fn main() -> anyhow::Result<()> {
         .arguments
         .as_ref();
 
+    // 6. Deserialize called function.
     let called_function =
         serde_json::from_str::<GetCurrentWeather>(&arguments)?;
 
+    // 7. Use the response.
     println!("Result:\n{}", called_function);
 
     Ok(())

@@ -6,8 +6,9 @@
 
 use clap::Parser;
 
+use oaapi::audio::File;
+use oaapi::audio::TimestampGranularity;
 use oaapi::audio::TranscriptionsRequestBody;
-use oaapi::audio::{File, TimestampGranularity};
 use oaapi::Client;
 
 #[derive(Parser)]
@@ -19,22 +20,30 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
-    let file = tokio::fs::read(arguments.file_path.clone()).await?;
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Load the audio file that you want to transcribe.
+    let file = tokio::fs::read(&arguments.file_path).await?;
     let file = File::new(arguments.file_path, file)?;
 
+    // 3. Create a request body parameters with specifying timestamp_granularities.
     let request_body = TranscriptionsRequestBody {
         file,
         timestamp_granularities: Some(vec![TimestampGranularity::Word]),
         ..Default::default()
     };
 
+    // 4. Call the API with specifying the response format.
     // NOTE: Timestamp granularities are only available in verbose JSON format.
     let response = client
-        .audio_transcribe_into_verbose_json(request_body)
+        .audio_transcribe_into_plain_text(request_body)
         .await?;
 
+    // 5. Use the response.
     println!("Result:\n{}", response);
 
     Ok(())

@@ -25,7 +25,6 @@
 //! use oaapi::audio::SpeechRequestBody;
 //! use oaapi::audio::SpeechInput;
 //! use oaapi::audio::Voice;
-//! use oaapi::audio::SpeechResponseFormat;
 //!
 //! use tokio_stream::StreamExt;
 //!
@@ -40,16 +39,15 @@
 //!     let request_body = SpeechRequestBody {
 //!         input: SpeechInput::new("Text to speech.")?,
 //!         voice: Voice::Alloy,
-//!         response_format: Some(SpeechResponseFormat::Mp3),
 //!         ..Default::default()
 //!     };
 //!
-//!     // 3. Call the API with specifying the response format.
+//!     // 3. Call the API.
 //!     let mut stream = client
 //!         .audio_speech(request_body)
 //!         .await?;
 //!
-//!     // 4. Use the stream to read the speech data.
+//!     // 4. Read the stream of the speech data.
 //!     while let Some(chunk) = stream.next().await {
 //!         // Do something with the chunk.
 //!     }

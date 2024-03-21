@@ -9,9 +9,6 @@
 //! $ cargo run --example chat_completions_stream --features chat -- --prompt "You are a excellent AI assistant." --message "Where is the capital of Japan?"
 //! ```
 
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-
 use clap::Parser;
 use tokio_stream::StreamExt;
 
@@ -33,24 +30,32 @@ struct Arguments {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let arguments = Arguments::parse();
-    let client = Client::from_env()?;
 
+    // 1. Create a client with the API key from the environment variable: "OPENAI_API_KEY"
+    let client = Client::from_env()?;
+    // or specify the API key directly.
+    // let client = Client::new(oaapi::ApiKey::new("OPENAI_API_KEY"), None, None);
+
+    // 2. Create a request body parameters with specifying the streaming option: `StreamOption::ReturnStream`.
     let request_body = CompletionsRequestBody {
         messages: vec![
             SystemMessage::new(arguments.prompt, None).into(),
             UserMessage::new(arguments.message.into(), None).into(),
         ],
         model: ChatModel::Gpt35Turbo,
-        stream: Some(StreamOption::ReturnStream), // Enable streaming.
+        stream: Some(StreamOption::ReturnStream),
         ..Default::default()
     };
 
+    // 3. Call the API.
     let mut stream = client
         .chat_complete_stream(request_body)
         .await?;
 
+    // 4. Set up text buffer.
     let mut text_buffer = String::new();
 
+    // 5. Receive the response stream.
     while let Some(response) = stream.next().await {
         match response {
             | Ok(chunk) => {
@@ -66,6 +71,7 @@ async fn main() -> anyhow::Result<()> {
                     .content
                     .clone()
                 {
+                    // 6. Buffer delta result.
                     text_buffer.push_str(delta.clone().as_str());
                 }
             },
@@ -79,6 +85,7 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    // 7. Use the total response.
     println!("Result:\n{}", text_buffer);
 
     Ok(())
